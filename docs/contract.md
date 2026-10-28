@@ -1,0 +1,43 @@
+# How the skills and workflows fit together
+
+The reference for anyone changing a skill or a workflow: how Cockpit runs a step, which files each step reads and writes, and the outcome words it reports. The friendly overview is in the [README](../README.md).
+
+## How a step runs a skill
+
+- **Invocation.** The step's opening message is the skill's slash command, `/renegade:<skill>`, then the step's resolved `prompt:`, then (for a step with `context: { transcript: <step> }`) "The conversation so far is in `<file>`; read it first.", then the step contract footer naming the step number, the run folder and the outcomes.
+- **The run folder** is `.cockpit/runs/<run-id>/` in the project. `reads`, `writes` and `shows` are relative to it; the prompts name it as `{{run.folder}}`.
+- **Outcomes.** A skill calls `report_outcome` (`mcp__cockpit__report_outcome`) with one of its step's declared outcomes and a one-line summary, or with a summary alone when the step declares none. Without the call, the engine reads the first line of the step's first written file (`OUTCOME: PASS`), which is why review files start with that line.
+- **Artifacts.** `write-spec`, `to-tickets` and `code-review` also call `submit_artifact` with kind `spec`, `tickets` or `review`.
+- **Back from a gate.** Request changes resumes the step's session with the notes and writes them to `gate-<step>.md` in the run folder; the skill revises its files in place.
+
+## File contract
+
+Paths are in the run folder unless they start with `/` (the project folder). "Engine" files are written by Cockpit, not by a skill.
+
+| Step (id) | Skill | Reads | Writes | Outcomes |
+|---|---|---|---|---|
+| Design (`design`) | `design-intake` | `transcript-design.md` (engine: the home chat, when passed) | `design.md`, always, a one-liner when there is no design | `DESIGN`, `NONE` |
+| Preflight (`preflight`) | `preflight` | `transcript-design.md` (engine), `design.md`, the repo's glossary, ADRs, spec and code | `preflight-notes.md`: the idea as settled, decisions with reasons, terms, facts from the repo, possible ADRs, open questions | none (summary only) |
+| Write spec (`spec`) | `write-spec` | `preflight-notes.md`, `transcript-preflight.md` (engine), `transcript-design.md` (engine), `design.md`, `gate-spec.md` (engine, on a revision) | `spec.md`: Goal, Non-goals, Behaviour, Decisions, Testing, Acceptance, Open questions | none (summary only) |
+| Review spec (`review-spec`) | gate | shows `spec.md` | `gate-spec.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
+| Break into tickets (`tickets`) | `to-tickets` | `spec.md`, `gate-tickets.md` (engine, on a revision) | `tickets/NN-<slug>.md` (one per ticket, from `01` in dependency order: title, Blocked by, What to build, Acceptance criteria, Verified by); `tickets.md` (the human index: per ticket its number, title, Blocked by, what it delivers, file); `tickets.json` (the machine index, below) | `READY` |
+| Approve tickets (`approve-tickets`) | gate | shows `tickets.md` | `gate-tickets.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
+| Implement › Implement (`implement`, per ticket) | `implement` | `spec.md`, the ticket's `tickets/NN-<slug>.md`, `review-*.md` | `build.md`: Built, Verified, Review findings, Left; commits on the lane's branch | none (summary only) |
+| Implement › Review › Code review | `code-review`, correctness | the ticket file, `spec.md`, the lane's diff | `review-code.md` | `PASS`, `CHANGES` |
+| Implement › Review › Code smell | `code-review`, smells only | the lane's diff | `review-smell.md` | `PASS`, `CHANGES` |
+| Final review › Code review | `code-review`, correctness | `spec.md`, the integration branch's diff | `final-review-code.md` | `PASS`, `CHANGES` |
+| Final review › Code smell | `code-review`, smells only | the integration branch's diff | `final-review-smell.md` | `PASS`, `CHANGES` |
+| Ship (`ship`) | gate | shows `final-review-code.md` | | `APPROVE`, `CHANGES`, `REJECT` |
+
+**`tickets.json`** is a JSON array in build order, blockers first:
+
+```json
+[
+  { "id": "01", "slug": "pause-on-failure", "title": "Pause the run when a step fails", "blockedBy": [], "file": "tickets/01-pause-on-failure.md" },
+  { "id": "02", "slug": "resume-a-paused-run", "title": "Resume a paused run", "blockedBy": ["01"], "file": "tickets/02-resume-a-paused-run.md" }
+]
+```
+
+`id` is two digits; `blockedBy` names earlier ids only; `file` is relative to the run folder. Idea → Shipped's fan-out (`foreach: tickets.frontier`) runs these, and its prompts use `{{item.id}}`, `{{item.title}}` and `{{item.file}}` from them. Where a lane's own files (`build.md`, `review-*.md`) sit inside the run folder is for Cockpit's fan-out to settle.
+
+**A review file** starts with the line `OUTCOME: PASS` or `OUTCOME: CHANGES`, then its findings under Changes (must change) and Optional, each as `file:line`, the problem and what to change.

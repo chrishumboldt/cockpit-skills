@@ -1,0 +1,117 @@
+# Idea → Shipped: Idea → Tickets, then implement, final review, ship (Cockpit spec §9.5).
+name: Idea → Shipped
+description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole, ship it.
+
+steps:
+  # Optional: it asks once for a design and always writes design.md, a one-liner when declined.
+  design:
+    name: Design
+    role: planner
+    skill: renegade/design-intake
+    interactive: true
+    writes: [design.md]
+    outcomes: [DESIGN, NONE]
+
+  preflight:
+    name: Preflight
+    role: planner
+    skill: renegade/preflight
+    interactive: true
+    context: { transcript: design }
+    reads: [design.md]
+    prompt: Read `{{run.folder}}/design.md`; when it holds a design, question the idea against it. Write your notes to `{{run.folder}}/preflight-notes.md`.
+    writes: [preflight-notes.md]
+
+  spec:
+    name: Write spec
+    role: planner
+    skill: renegade/write-spec
+    context: { transcript: preflight }
+    reads: [preflight-notes.md, design.md, transcript-design.md]
+    prompt: Write the spec to `{{run.folder}}/spec.md` from `{{preflight.file}}`, `{{run.folder}}/transcript-design.md` (the idea as first told) and `{{run.folder}}/design.md`.
+    writes: [spec.md]
+
+  review-spec:
+    name: Review spec
+    gate: approval
+    shows: spec.md
+    on:
+      CHANGES: spec
+      REJECT: end
+
+  tickets:
+    name: Break into tickets
+    role: planner
+    skill: renegade/to-tickets
+    reads: [spec.md]
+    writes: [tickets.md, tickets.json, 'tickets/*.md']
+    outcomes: [READY]
+    prompt: Break `{{spec.file}}` into tickets in `{{run.folder}}`.
+
+  approve-tickets:
+    name: Approve tickets
+    gate: approval
+    shows: tickets.md
+    on:
+      CHANGES: tickets
+      REJECT: end
+
+  # Steps 7 to 9 run from cycle 7: until then the engine refuses this workflow whole (ADR-0025).
+  implement:
+    name: Implement
+    foreach: tickets.frontier
+    steps:
+      implement:
+        name: Implement
+        role: implementer
+        skill: renegade/implement
+        reads: [spec.md, 'tickets/*.md', 'review-*.md']
+        writes: [build.md]
+        prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{spec.file}}`. Write what you built to `build.md`.
+
+      review:
+        name: Review
+        parallel:
+          code-review:
+            name: Code review
+            role: reviewer
+            skill: renegade/code-review
+            prompt: Review ticket {{item.id}}'s change for correctness against `{{run.folder}}/{{item.file}}` and `{{spec.file}}`; write the review to `review-code.md`.
+          code-smell:
+            name: Code smell
+            role: smell-checker
+            skill: renegade/code-review
+            prompt: Review ticket {{item.id}}'s change for code smells only; write the review to `review-smell.md`.
+        writes: ['review-*.md']
+        outcomes: [PASS, CHANGES]
+        on:
+          CHANGES: { to: implement, max: 2 }
+
+      merge:
+        name: Merge
+        run: git merge --no-ff {{item.branch}}
+
+  final-review:
+    name: Final review
+    parallel:
+      code-review:
+        name: Code review
+        role: reviewer
+        skill: renegade/code-review
+        prompt: Review the integration branch `{{run.branch}}` as a whole for correctness against `{{spec.file}}`; write the review to `{{run.folder}}/final-review-code.md`.
+      code-smell:
+        name: Code smell
+        role: smell-checker
+        skill: renegade/code-review
+        prompt: Review the integration branch `{{run.branch}}` as a whole for code smells only; write the review to `{{run.folder}}/final-review-smell.md`.
+    writes: ['final-review-*.md']
+    outcomes: [PASS, CHANGES]
+
+  ship:
+    name: Ship
+    gate: approval
+    shows: final-review-code.md
+    prompt: Ship `{{run.branch}}`, opening its pull request?
+    on:
+      CHANGES: implement
+      REJECT: end

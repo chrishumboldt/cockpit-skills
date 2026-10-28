@@ -1,0 +1,58 @@
+# Idea → Tickets: design, preflight, spec, review, tickets, approve (Cockpit spec §9.5).
+name: Idea → Tickets
+description: Ask for a design, preflight an idea, write and review the spec, break it into tickets and approve them.
+
+steps:
+  # Optional: it asks once for a design and always writes design.md, a one-liner when declined.
+  design:
+    name: Design
+    role: planner
+    skill: renegade/design-intake
+    interactive: true
+    writes: [design.md]
+    outcomes: [DESIGN, NONE]
+
+  preflight:
+    name: Preflight
+    role: planner
+    skill: renegade/preflight
+    interactive: true
+    context: { transcript: design }
+    reads: [design.md]
+    prompt: Read `{{run.folder}}/design.md`; when it holds a design, question the idea against it. Write your notes to `{{run.folder}}/preflight-notes.md`.
+    writes: [preflight-notes.md]
+
+  spec:
+    name: Write spec
+    role: planner
+    skill: renegade/write-spec
+    context: { transcript: preflight }
+    reads: [preflight-notes.md, design.md, transcript-design.md]
+    prompt: Write the spec to `{{run.folder}}/spec.md` from `{{preflight.file}}`, `{{run.folder}}/transcript-design.md` (the idea as first told) and `{{run.folder}}/design.md`.
+    writes: [spec.md]
+
+  review-spec:
+    name: Review spec
+    gate: approval
+    shows: spec.md
+    on:
+      CHANGES: spec
+      REJECT: end
+
+  tickets:
+    name: Break into tickets
+    role: planner
+    skill: renegade/to-tickets
+    reads: [spec.md]
+    writes: [tickets.md, tickets.json, 'tickets/*.md']
+    outcomes: [READY]
+    prompt: Break `{{spec.file}}` into tickets in `{{run.folder}}`.
+
+  # The run's last step: the tickets stay as files in the run folder.
+  approve-tickets:
+    name: Approve tickets
+    gate: approval
+    shows: tickets.md
+    on:
+      CHANGES: tickets
+      REJECT: end
