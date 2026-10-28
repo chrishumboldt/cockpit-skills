@@ -1,6 +1,6 @@
 # Idea → Shipped: Idea → Tickets, then implement, final review and fix, ship, open the pull request (Cockpit spec §9.5).
 name: Idea → Shipped
-description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole, ship it.
+description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole and fix what it finds, then open a pull request.
 
 steps:
   # Optional: it asks once for a design and always writes design.md, a one-liner when declined.
@@ -119,7 +119,7 @@ steps:
     reads: ['final-review-*.md', spec.md, gate-ship.md]
     writes: [fix.md]
     outcomes: [DONE]
-    prompt: Fix what `{{run.folder}}/final-review-code.md`, `{{run.folder}}/final-review-smell.md` and, when it exists, `{{run.folder}}/gate-ship.md` ask for on `{{run.branch}}`, against `{{spec.file}}`. Write what you changed to `{{run.folder}}/fix.md`.
+    prompt: This round fixes the integration branch `{{run.branch}}` as a whole, not a ticket. Fix what `{{run.folder}}/final-review-code.md`, `{{run.folder}}/final-review-smell.md` and, when it exists, `{{run.folder}}/gate-ship.md` ask for, against `{{spec.file}}`, and write what you changed to `{{run.folder}}/fix.md`.
     on:
       DONE: { to: final-review, max: 2 }
 
