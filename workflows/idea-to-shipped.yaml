@@ -7,7 +7,7 @@ steps:
   design:
     name: Design
     role: planner
-    skill: renegade/design-intake
+    skill: cockpit/design-intake
     interactive: true
     writes: [design.md]
     outcomes: [DESIGN, NONE]
@@ -15,7 +15,7 @@ steps:
   preflight:
     name: Preflight
     role: planner
-    skill: renegade/preflight
+    skill: cockpit/preflight
     interactive: true
     context: { transcript: design }
     reads: [design.md]
@@ -25,7 +25,7 @@ steps:
   spec:
     name: Write spec
     role: planner
-    skill: renegade/write-spec
+    skill: cockpit/write-spec
     context: { transcript: preflight }
     reads: [preflight-notes.md, design.md, transcript-design.md]
     prompt: Write the spec to `{{run.folder}}/spec.md` from `{{preflight.file}}`, `{{run.folder}}/transcript-design.md` (the idea as first told) and `{{run.folder}}/design.md`.
@@ -42,7 +42,7 @@ steps:
   tickets:
     name: Break into tickets
     role: planner
-    skill: renegade/to-tickets
+    skill: cockpit/to-tickets
     reads: [spec.md]
     writes: [tickets.md, tickets.json, 'tickets/*.md']
     outcomes: [READY]
@@ -64,7 +64,7 @@ steps:
       implement:
         name: Implement
         role: implementer
-        skill: renegade/implement
+        skill: cockpit/implement
         reads: [spec.md, 'tickets/*.md', 'review-*.md']
         writes: [build.md]
         prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{spec.file}}`. Write what you built to `build.md`.
@@ -75,12 +75,12 @@ steps:
           code-review:
             name: Code review
             role: reviewer
-            skill: renegade/code-review
+            skill: cockpit/code-review
             prompt: Review ticket {{item.id}}'s change for correctness against `{{run.folder}}/{{item.file}}` and `{{spec.file}}`; write the review to `review-code.md`.
           code-smell:
             name: Code smell
             role: smell-checker
-            skill: renegade/code-review
+            skill: cockpit/code-review
             prompt: Review ticket {{item.id}}'s change for code smells only; write the review to `review-smell.md`.
         writes: ['review-*.md']
         outcomes: [PASS, CHANGES]
@@ -97,12 +97,12 @@ steps:
       code-review:
         name: Code review
         role: reviewer
-        skill: renegade/code-review
+        skill: cockpit/code-review
         prompt: Review the integration branch `{{run.branch}}` as a whole for correctness against `{{spec.file}}`; write the review to `{{run.folder}}/final-review-code.md`.
       code-smell:
         name: Code smell
         role: smell-checker
-        skill: renegade/code-review
+        skill: cockpit/code-review
         prompt: Review the integration branch `{{run.branch}}` as a whole for code smells only; write the review to `{{run.folder}}/final-review-smell.md`.
     writes: ['final-review-*.md']
     outcomes: [PASS, CHANGES]

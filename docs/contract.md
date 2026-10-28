@@ -4,7 +4,7 @@ The reference for anyone changing a skill or a workflow: how Cockpit runs a step
 
 ## How a step runs a skill
 
-- **Invocation.** The step's opening message is the skill's slash command, `/renegade:<skill>`, then the step's resolved `prompt:`, then (for a step with `context: { transcript: <step> }`) "The conversation so far is in `<file>`; read it first.", then the step contract footer naming the step number, the run folder and the outcomes.
+- **Invocation.** The step's opening message is the skill's slash command, `/cockpit:<skill>`, then the step's resolved `prompt:`, then (for a step with `context: { transcript: <step> }`) "The conversation so far is in `<file>`; read it first.", then the step contract footer naming the step number, the run folder and the outcomes.
 - **The run folder** is `.cockpit/runs/<run-id>/` in the project. `reads`, `writes` and `shows` are relative to it; the prompts name it as `{{run.folder}}`.
 - **Outcomes.** A skill calls `report_outcome` (`mcp__cockpit__report_outcome`) with one of its step's declared outcomes and a one-line summary, or with a summary alone when the step declares none. Without the call, the engine reads the first line of the step's first written file (`OUTCOME: PASS`), which is why review files start with that line.
 - **Artifacts.** `write-spec`, `to-tickets` and `code-review` also call `submit_artifact` with kind `spec`, `tickets` or `review`.
