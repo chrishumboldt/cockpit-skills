@@ -1,6 +1,6 @@
-# Idea → Shipped: Idea → Tickets, then implement, final review, ship (Cockpit spec §9.5).
+# Idea → Shipped: Idea → Tickets, then implement, final review and fix, ship, open the pull request (Cockpit spec §9.5).
 name: Idea → Shipped
-description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole, ship it.
+description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole and fix what it finds, then open a pull request.
 
 steps:
   # Optional: it asks once for a design and always writes design.md, a one-liner when declined.
@@ -56,7 +56,7 @@ steps:
       CHANGES: tickets
       REJECT: end
 
-  # Steps 7 to 9 run from cycle 7: until then the engine refuses this workflow whole (ADR-0025).
+  # Steps 7 to 11 run from cycle 7: until then the engine refuses this workflow whole (ADR-0025).
   implement:
     name: Implement
     foreach: tickets.frontier
@@ -90,6 +90,7 @@ steps:
       merge:
         name: Merge
         run: git merge --no-ff {{item.branch}}
+        on_stop: git merge --abort
 
   final-review:
     name: Final review
@@ -106,6 +107,21 @@ steps:
         prompt: Review the integration branch `{{run.branch}}` as a whole for code smells only; write the review to `{{run.folder}}/final-review-smell.md`.
     writes: ['final-review-*.md']
     outcomes: [PASS, CHANGES]
+    on:
+      PASS: ship
+      CHANGES: fix
+
+  # Fixes what Final review or Ship's Request changes found, on the integration branch.
+  fix:
+    name: Fix
+    role: implementer
+    skill: cockpit/implement
+    reads: ['final-review-*.md', spec.md, gate-ship.md]
+    writes: [fix.md]
+    outcomes: [DONE]
+    prompt: This round fixes the integration branch `{{run.branch}}` as a whole, not a ticket. Fix what `{{run.folder}}/final-review-code.md`, `{{run.folder}}/final-review-smell.md` and, when it exists, `{{run.folder}}/gate-ship.md` ask for, against `{{spec.file}}`, and write what you changed to `{{run.folder}}/fix.md`.
+    on:
+      DONE: { to: final-review, max: 2 }
 
   ship:
     name: Ship
@@ -113,5 +129,9 @@ steps:
     shows: final-review-code.md
     prompt: Ship `{{run.branch}}`, opening its pull request?
     on:
-      CHANGES: implement
+      CHANGES: fix
       REJECT: end
+
+  publish:
+    name: Open pull request
+    run: git push -u origin {{run.branch}} && gh pr create --head {{run.branch}} --title "{{run.branch}}" --body-file {{spec.file}}

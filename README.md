@@ -37,7 +37,9 @@ The same six steps, then it builds the tickets:
 
 7. **Implement.** Each ticket is built test-first on its own branch, reviewed for correctness and for code smells, sent back for fixes if needed, and merged.
 8. **Final review.** The whole result is reviewed once more.
-9. **Ship.** You approve, and it opens the pull request.
+9. **Fix.** When Final review or you ask for changes, an agent fixes them and Final review looks again (up to twice).
+10. **Ship.** You approve, or ask for changes, which go to Fix.
+11. **Open pull request.** It pushes the branch and opens the pull request, with the spec as its description.
 
 Idea → Shipped needs a version of Cockpit that can run steps in parallel. Until then Cockpit lists it but won't start it.
 
