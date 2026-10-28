@@ -1,7 +1,7 @@
 ---
 name: write-spec
 description: The Write spec step of a Cockpit run. Turns the settled idea from the preflight notes, its transcript and design.md into spec.md in the run folder, with no questions asked.
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # Write spec
