@@ -56,7 +56,6 @@ steps:
       CHANGES: tickets
       REJECT: end
 
-  # Steps 7 to 11 run from cycle 7: until then the engine refuses this workflow whole (ADR-0025).
   implement:
     name: Implement
     foreach: tickets.frontier
@@ -134,4 +133,4 @@ steps:
 
   publish:
     name: Open pull request
-    run: git push -u origin {{run.branch}} && gh pr create --head {{run.branch}} --title "{{run.branch}}" --body-file {{spec.file}}
+    run: git push -u origin {{run.branch}} && gh pr create --head {{run.branch}} --base {{run.base}} --title "{{run.branch}}" --body-file {{spec.file}}
