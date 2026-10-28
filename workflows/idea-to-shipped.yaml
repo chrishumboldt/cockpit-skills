@@ -1,6 +1,6 @@
-# Idea → Shipped: Idea → Tickets, then implement, final review and fix, ship, open the pull request (Cockpit spec §9.5).
+# Idea → Shipped: Idea → Tickets, then implement, final review and fix, ship, open the pull request and merge it (Cockpit spec §9.5).
 name: Idea → Shipped
-description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole and fix what it finds, then open a pull request.
+description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole and fix what it finds, then open a pull request and merge it.
 
 steps:
   # Optional: it asks once for a design and always writes design.md, a one-liner when declined.
@@ -126,11 +126,17 @@ steps:
     name: Ship
     gate: approval
     shows: final-review-code.md
-    prompt: Ship `{{run.branch}}`, opening its pull request?
+    prompt: 'Ship `{{run.branch}}`: open its pull request and merge it into `{{run.base}}`?'
     on:
       CHANGES: fix
       REJECT: end
 
+  # Titled by the spec's heading and its issue; the body opens with "Closes #N" when the spec names one.
   publish:
     name: Open pull request
-    run: git push -u origin {{run.branch}} && gh pr create --head {{run.branch}} --base {{run.base}} --title "{{run.branch}}" --body-file {{spec.file}}
+    run: git push -u origin {{run.branch}} && printf '%s\n\n' {{spec.preface}} | cat - {{spec.file}} | gh pr create --head {{run.branch}} --base {{run.base}} --title {{spec.title}} --body-file -
+
+  # A merge commit into the base, then the remote branch goes; its last line names the merge commit.
+  merge-pr:
+    name: Merge pull request
+    run: gh pr merge {{run.branch}} --merge && git push origin --delete {{run.branch}} && gh pr view {{run.branch}} --json url,mergeCommit --jq '"Merged \(.url) as \(.mergeCommit.oid[0:7])"'

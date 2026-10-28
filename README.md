@@ -38,8 +38,9 @@ The same six steps, then it builds the tickets:
 7. **Implement.** Each ticket is built test-first on its own branch, reviewed for correctness and for code smells, sent back for fixes if needed, and merged.
 8. **Final review.** The whole result is reviewed once more.
 9. **Fix.** When Final review or you ask for changes, an agent fixes them and Final review looks again (up to twice).
-10. **Ship.** You approve, or ask for changes, which go to Fix.
-11. **Open pull request.** It pushes the branch and opens the pull request, with the spec as its description.
+10. **Ship.** You approve, which opens the pull request and merges it, or ask for changes, which go to Fix.
+11. **Open pull request.** It pushes the branch and opens the pull request, titled by the spec's heading and its issue, with the spec as its description. When the spec names the GitHub issue it builds (`Issue: #418`), the title ends with `(#418)` and the description opens with `Closes #418`.
+12. **Merge pull request.** It merges the pull request into the branch the run started from, as a merge commit, and deletes the pushed branch. A merge that fails (a conflict, a required check) stops the run at that step, with the pull request left open.
 
 Idea → Shipped needs a version of Cockpit that can run steps in parallel. Until then Cockpit lists it but won't start it.
 
