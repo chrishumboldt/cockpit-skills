@@ -1,7 +1,7 @@
 ---
 name: to-tickets
 description: The Break into tickets step of a Cockpit run. Breaks spec.md into tracer-bullet tickets, one file each in the run folder, with a human index (tickets.md) and a machine index (tickets.json); reports READY.
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # To tickets

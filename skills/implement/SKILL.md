@@ -1,7 +1,7 @@
 ---
 name: implement
 description: The Implement step of a Cockpit run. Builds one ticket test-first against spec.md, addresses every review finding when a review asked for changes, runs only the focused tests, commits, and writes build.md.
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # Implement

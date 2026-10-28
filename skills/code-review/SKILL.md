@@ -1,7 +1,7 @@
 ---
 name: code-review
 description: A review step of a Cockpit run. Reviews a change in one of two modes the step prompt picks, correctness against the spec and ticket or code smells only, writes the review file the prompt names and reports PASS or CHANGES.
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # Code review

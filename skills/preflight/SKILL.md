@@ -1,7 +1,7 @@
 ---
 name: preflight
 description: The Preflight step of a Cockpit run. Questions the user relentlessly, one question at a time, until the idea is settled, checking the repo first so it never asks what the code or docs already answer; writes preflight-notes.md.
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 # Preflight
