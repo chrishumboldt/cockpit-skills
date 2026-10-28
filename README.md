@@ -1,4 +1,4 @@
-# Renegade Skills
+# Cockpit Skills
 
 Skills and workflows for [Cockpit](https://github.com/chrishumboldt/renegade-cockpit), the desktop app by Renegade Studios for running coding agents side by side.
 
@@ -6,12 +6,12 @@ Install this package and your agents can take an idea all the way to a set of ti
 
 ## Installing
 
-Open Cockpit and go to **Skills** or **Workflows**. If you have nothing installed yet, you'll see an **Install Renegade Skills** button. Click it and you're done.
+Open Cockpit and go to **Skills** or **Workflows**. If you have nothing installed yet, you'll see an **Install Cockpit Skills** button. Click it and you're done.
 
 Already have other packages? Use **Install from GitHub** and paste this repo's URL:
 
 ```
-https://github.com/chrishumboldt/renegade-skills
+https://github.com/chrishumboldt/cockpit-skills
 ```
 
 Cockpit asks you which of your agents fill the package's roles (a planner, an implementer, a reviewer and a smell-checker), and then the workflows show up in your session's `/` menu. **Update** in the Skills view pulls new releases; **Remove** takes it all out again.
