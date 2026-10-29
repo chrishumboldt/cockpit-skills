@@ -15,6 +15,12 @@ Read every item in `docs/backlog/`. List the `ready` ones as a numbered list, on
 - An item whose blockers aren't done and aren't picked: name them and ask whether to add them.
 - An item with `needs`: show it and ask whether it's met.
 - An item too thin to build safely (no clear behaviour or acceptance, or plainly bigger than one sitting): say so and suggest shaping it with `Idea 2 Backlog` first, unless the user wants it built anyway.
+- Staleness, for each picked item, before any ticket is written. Read the files, symbols and labels it names as they are on the base branch now, and what has landed since its `added` date: later backlog items (`done` ones too) that touch the same thing, and the base's commits on those files (`git log --since=<added> -- <files>`). Flag the item, with one line of evidence, when it is:
+  - **Done already**: the base already behaves as the acceptance criteria say.
+  - **Superseded**: a later item reverses or replaces it; name that item.
+  - **Moved**: a file, symbol or label it names no longer exists or was renamed.
+
+  Ask about each flagged item: build it anyway, drop it from this run, or mark it in the backlog (`status: idea` with a line on why, or `done` with the date when it's already there). A marked item is edited in the working tree and goes in the run's commit with the tickets. A dropped or marked item gets no ticket. An item with no flag goes through without a question. This check only reads; it never runs builds or tests.
 - Nothing picked, or nothing ready: write no tickets and report `NONE`.
 
 ## 3. Write the run's tickets
@@ -33,4 +39,4 @@ In the run folder, in build order (blockers first):
 - `picks.txt`: the picked items' paths, one per line, relative to the repository root. The land step marks them done.
 
 ## 4. Report
-Call `report_outcome` with `READY` and a one-line summary ("3 items: 014, 015, 016; 016 waits on 014").
+Call `report_outcome` with `READY` and a one-line summary ("3 items: 014, 015, 016; 016 waits on 014"). Name any flagged items and what the user chose ("3 items: 014, 015, 016; 017 dropped, already done").
