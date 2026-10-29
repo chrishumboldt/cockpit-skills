@@ -57,7 +57,7 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Write backlog items (`items`, Idea 2 Backlog) | `backlog-items` | `spec.md`, `docs/backlog/`, `gate-items.md` (engine, on a revision) | `docs/backlog/NNN-<slug>.md` and `docs/backlog/specs/<slug>.md`, committed on the run's branch; `items.md` (the index the gate shows) | `READY` |
 | Approve items (`approve-items`) | gate | shows `items.md` | `gate-items.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
 | Add to backlog (`land`, Idea 2 Backlog) | `run:` merge the run's branch into `{{run.base}}` (`--no-ff`, in the run worktree) and push it | | the step's log (engine) | `PASS`, `FAIL` |
-| Pick items (`pick`, Backlog 2 Shipped) | `backlog-pick`, interactive | `docs/backlog/` | `picks.txt` (the items' repo paths), `spec.md`, `tickets.md`, `tickets.json`, `tickets/*.md` | `READY`, `NONE` (ends the run) |
+| Pick items (`pick`, Backlog 2 Shipped) | `backlog-pick`, interactive | `docs/backlog/` | `picks.txt` (the items' repo paths), `spec.md`, `tickets.md`, `tickets.json`, `tickets/*.md`; a commit on the run's branch for each item the user marks `idea` or `done` | `READY`, `NONE` (ends the run) |
 | Ship (`ship`, Backlog 2 Shipped) | gate | shows `final-review-code.md` | `gate-ship.md` (engine, on Request changes, read by Fix) | `APPROVE`, `CHANGES`, `REJECT` |
 | Merge (`land`, Backlog 2 Shipped) | `run:` sets the picked items to `status: done` with a `done:` date, commits, merges into `{{run.base}}` (`--no-ff`) and pushes it | `picks.txt` | the step's log (engine) | `PASS`, `FAIL` |
 

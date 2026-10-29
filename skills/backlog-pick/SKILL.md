@@ -1,6 +1,6 @@
 ---
 name: backlog-pick
-description: The Pick items step of Backlog 2 Shipped. Lists the ready backlog items, asks the user which to build, checks blockers and needs, and writes the run's tickets, spec.md and picks.txt; reports READY, or NONE when nothing is picked.
+description: The Pick items step of Backlog 2 Shipped. Lists the ready backlog items, asks the user which to build, checks blockers, needs and staleness, and writes the run's tickets, spec.md and picks.txt; reports READY, or NONE when nothing is picked.
 disable-model-invocation: false
 ---
 
@@ -15,6 +15,12 @@ Read every item in `docs/backlog/`. List the `ready` ones as a numbered list, on
 - An item whose blockers aren't done and aren't picked: name them and ask whether to add them.
 - An item with `needs`: show it and ask whether it's met.
 - An item too thin to build safely (no clear behaviour or acceptance, or plainly bigger than one sitting): say so and suggest shaping it with `Idea 2 Backlog` first, unless the user wants it built anyway.
+- Staleness, for each picked item, before any ticket is written. Read the files, symbols and labels it names as they are on `origin/<base>` after a `git fetch`, and what has landed since its `added` date: later backlog items (`done` ones too) that touch the same thing, and the base's commits on those files (`git log --since=<added> -- <files>`). Flag the item, with one line of evidence, when it is:
+  - **Done already**: the base already behaves as the acceptance criteria say.
+  - **Superseded**: a later item reverses or replaces it; name that item.
+  - **Moved**: a file, symbol or label it names no longer exists or was renamed.
+
+  Ask about each flagged item: build it anyway, drop it from this run, or mark it in the backlog (`status: idea` with a line on why, or `done` with the date when it's already there). Edit a marked item and commit it on the run's branch (`git add docs/backlog/<file> && git commit -m "Backlog: mark NNN <status>"`), so the land step merges it in. If nothing is left to build, commit the mark to the base the way `backlog-add` does (temporary worktree on the fetched base, push), then report `NONE`. A dropped or marked item is left out of the tickets, `tickets.json`, `spec.md` and `picks.txt`; only items being built go in them. An item with no flag goes through without a question. This check only reads; it never runs builds or tests.
 - Nothing picked, or nothing ready: write no tickets and report `NONE`.
 
 ## 3. Write the run's tickets
@@ -33,4 +39,4 @@ In the run folder, in build order (blockers first):
 - `picks.txt`: the picked items' paths, one per line, relative to the repository root. The land step marks them done.
 
 ## 4. Report
-Call `report_outcome` with `READY` and a one-line summary ("3 items: 014, 015, 016; 016 waits on 014").
+Call `report_outcome` with `READY` and a one-line summary ("3 items: 014, 015, 016; 016 waits on 014"). Name any flagged items and what the user chose ("3 items: 014, 015, 016; 017 dropped, already done").
