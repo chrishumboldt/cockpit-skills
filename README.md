@@ -37,7 +37,7 @@ Small, clear things don't need a workflow: ask any session to add them, and the 
 ### Backlog 2 Shipped
 
 1. **Pick items.** It lists the ready items and asks which to build, checking blockers and `needs` with you.
-2. **Implement.** Each item is built test-first on its own branch, reviewed for correctness and for code smells, sent back for fixes if needed, and merged into the run's branch. Items that don't block each other build at the same time.
+2. **Implement.** Each item is built test-first on its own branch, reviewed for correctness, sent back for fixes if needed, and merged into the run's branch. Items that don't block each other build at the same time.
 3. **Final review.** The whole result is reviewed once more.
 4. **Fix.** When Final review or you ask for changes, an agent fixes them and Final review looks again.
 5. **Ship.** You approve, or ask for changes, which go to Fix.

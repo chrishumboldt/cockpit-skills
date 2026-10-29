@@ -26,20 +26,14 @@ steps:
         writes: [build.md]
         prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{run.folder}}/spec.md`. Run the tests that cover what you changed. Write what you built to `build.md`.
 
+      # Correctness per ticket, while the lane's agent has the context; smells wait for the
+      # final review, which sees the whole branch.
       review:
-        name: Review
-        parallel:
-          code-review:
-            name: Code review
-            role: reviewer
-            skill: cockpit/code-review
-            prompt: Review ticket {{item.id}}'s change for correctness against `{{run.folder}}/{{item.file}}` and `{{run.folder}}/spec.md`; write the review to `review-code.md`.
-          code-smell:
-            name: Code smell
-            role: smell-checker
-            skill: cockpit/code-review
-            prompt: Review ticket {{item.id}}'s change for code smells only; write the review to `review-smell.md`.
-        writes: ['review-*.md']
+        name: Code review
+        role: reviewer
+        skill: cockpit/code-review
+        prompt: Review ticket {{item.id}}'s change for correctness against `{{run.folder}}/{{item.file}}` and `{{run.folder}}/spec.md`; write the review to `review-code.md`.
+        writes: [review-code.md]
         outcomes: [PASS, CHANGES]
         on:
           CHANGES: { to: implement, max: 2 }

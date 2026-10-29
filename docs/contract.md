@@ -24,8 +24,7 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Write spec (`spec`) | `write-spec` | `preflight-notes.md`, `transcript-preflight.md` (engine), `transcript-design.md` (engine), `design.md`, `gate-spec.md` (engine, on a revision) | `spec.md`: a title, an `Issue: #N` line when the idea builds a GitHub issue, then Goal, Non-goals, Behaviour, Decisions, Testing, Acceptance, Open questions | none (summary only) |
 | Review spec (`review-spec`) | gate | shows `spec.md` | `gate-spec.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
 | Implement › Implement (`implement`, per ticket) | `implement` | `spec.md`, the ticket's `tickets/NN-<slug>.md` (both from the run folder), `review-*.md` (the lane's) | lane folder: `build.md`: Built, Verified, Review findings, Left; commits on `{{item.branch}}` | none (summary only) |
-| Implement › Review › Code review | `code-review`, correctness | the ticket file, `spec.md`, the lane's diff | lane folder: `review-code.md` | `PASS`, `CHANGES` |
-| Implement › Review › Code smell | `code-review`, smells only | the lane's diff | lane folder: `review-smell.md` | `PASS`, `CHANGES` |
+| Implement › Code review | `code-review`, correctness | the ticket file, `spec.md`, the lane's diff | lane folder: `review-code.md` | `PASS`, `CHANGES` |
 | Implement › Merge (`merge`, per ticket) | `run:` `git merge --no-ff {{item.branch}}`, `on_stop: git merge --abort` | | lane folder: the step's log (engine) | `PASS`, `FAIL` |
 | Final review › Code review | `code-review`, correctness | `spec.md`, the integration branch's diff | `final-review-code.md` | `PASS`, `CHANGES` |
 | Final review › Code smell | `code-review`, smells only | the integration branch's diff | `final-review-smell.md` | `PASS`, `CHANGES` |
