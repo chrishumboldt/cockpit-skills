@@ -124,7 +124,7 @@ steps:
       CHANGES: fix
       REJECT: end
 
-  # Marks the picked items done on the branch, merges it into the base as one merge commit, and pushes the base.
+  # Merges the branch into the fetched base as one merge commit, marks the picked items done on top of it, and pushes the base.
   land:
     name: Merge
     run: |-
@@ -132,22 +132,33 @@ steps:
       set -e
       branch=$1 base=$2 picks=$3
       today=$(date +%F)
-      while read -r f; do
-        [ -n "$f" ] || continue
-        sed -i "s/^status: .*/status: done/" "$f"
-        grep -q "^done:" "$f" || sed -i "s/^added: .*/&\ndone: $today/" "$f"
-      done < "$picks"
-      git add docs/backlog && git commit -q -m "Backlog: mark $(tr "\n" " " < "$picks" | sed "s#docs/backlog/##g; s#-[^ ]*##g; s/ *$//") done" || true
-      # Main may move while this merges (another session pushing): fetch, merge and push again.
+      # Main may move while this merges (another session pushing): fetch, merge, mark and push again.
+      # Items are marked on the merged tree, so one filed or edited on the base since the branch was cut is there too.
       for try in 1 2 3; do
         git fetch -q origin "$base"
         git checkout -q --detach "origin/$base"
         git merge --no-ff --no-edit -m "Merge $branch into $base" "$branch"
+        marked= missed=
+        while read -r f; do
+          [ -n "$f" ] || continue
+          n=$(basename "$f" | sed "s/-.*//")
+          if [ ! -f "$f" ]; then
+            echo "$n not on the base: not marked done"
+            missed="$missed $n"
+            continue
+          fi
+          sed -i "s/^status: .*/status: done/" "$f"
+          grep -q "^done:" "$f" || sed -i "s/^added: .*/&\ndone: $today/" "$f"
+          marked="$marked $n"
+        done < "$picks"
+        git add docs/backlog
+        git diff --cached --quiet || git commit -q -m "Backlog: mark$marked done"
         if git push -q origin "HEAD:$base"; then break; fi
         [ "$try" = 3 ] && exit 1
         echo "$base moved while merging; trying again" >&2
         sleep 2
       done
       echo "Merged into $base as $(git rev-parse --short HEAD)"
+      [ -z "$missed" ] || echo "Not marked done:$missed"
       git checkout -q "$branch"
       ' sh {{run.branch}} {{run.base}} {{run.folder}}/picks.txt
