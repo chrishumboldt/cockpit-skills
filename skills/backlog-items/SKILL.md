@@ -21,6 +21,7 @@ Slice the spec as the `to-tickets` skill does: vertical slices, each complete an
 ## 3. Write
 - Number from the highest existing item plus one, three digits.
 - Copy `spec.md` to `docs/backlog/specs/<spec slug>.md`; each item's `spec:` names it.
+- End that copy with a `## Backlog items` section listing the items it became, one line each: `- 014 · <Title>` (`NNN-<slug>.md`). Someone who opens the spec finds its items there; whether they're done stays in each item's `status`.
 - Each item: `docs/backlog/NNN-<slug>.md` in the format, `added:` today.
 - Commit on the run's branch: `git add docs/backlog && git commit -m "Backlog: <spec title>"`.
 - Write `items.md` in the run folder, the file the gate shows:

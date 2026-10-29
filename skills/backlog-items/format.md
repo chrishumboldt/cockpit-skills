@@ -6,7 +6,7 @@ The backlog is everything waiting to be built in a project, one Markdown file pe
 
 - `docs/backlog/README.md`: this format, copied in when the backlog is first made.
 - `docs/backlog/NNN-<slug>.md`: one item. `NNN` is three digits, never reused; a new item takes the highest number plus one. The slug is the title in lowercase kebab case.
-- `docs/backlog/specs/<slug>.md`: a spec from `Idea 2 Backlog`, shared by the items it split into.
+- `docs/backlog/specs/<slug>.md`: a spec from `Idea 2 Backlog`, shared by the items it split into. It ends with a `## Backlog items` list naming them.
 
 ## An item
 
