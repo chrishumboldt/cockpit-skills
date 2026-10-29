@@ -1,6 +1,6 @@
 ---
 name: backlog-items
-description: The Write backlog items step of Idea 2 Backlog. Splits an approved spec into backlog items in docs/backlog/ with their dependencies, saves the spec beside them, commits on the run's branch and writes items.md for the gate; reports READY.
+description: The Write backlog items step of Idea 2 Backlog and Idea 2 Shipped. Splits an approved spec into backlog items in docs/backlog/ with their dependencies, saves the spec beside them, commits on the run's branch and writes items.md for the gate; reports READY.
 disable-model-invocation: false
 ---
 
@@ -34,6 +34,9 @@ Slice the spec as the `to-tickets` skill does: vertical slices, each complete an
 **Status:** ready · **Kind:** feature · **Blocked by:** none · **Needs:** none
 **Delivers:** one or two lines.
 ```
+
+## When the prompt asks for the run's tickets too
+In `Idea 2 Shipped` the run builds the items you wrote right after the gate. Then also write, in the run folder, what its fan-out reads, exactly as the `backlog-pick` skill describes in its step 3: `tickets/NN-<slug>.md` per item, `tickets.json`, `tickets.md`, and `picks.txt` (the items' repo paths). Keep `spec.md` as it is. On a revision from the gate, rewrite them along with the items.
 
 ## 4. Back from the gate
 Request changes resumes you with the notes in `gate-items.md`: revise the items and `items.md` in place, commit again, and report again.

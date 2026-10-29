@@ -24,8 +24,5 @@ In the run folder, in build order (blockers first):
 - `spec.md`, which the build steps read: titled "Build · <item numbers>", then the specs the items name (`docs/backlog/specs/…`), each once, and for an item with no spec its own body.
 - `picks.txt`: the picked items' paths, one per line, relative to the repository root. The land step marks them done.
 
-## When the prompt names the items
-In `Idea 2 Shipped` the prompt names the items to build (the ones the run just wrote, listed in `items.md`). Then skip steps 1 and 2: ask nothing, take exactly those items, and keep the run's `spec.md`, which already is their spec. Write the rest as in step 3.
-
 ## 4. Report
 Call `report_outcome` with `READY` and a one-line summary ("3 items: 014, 015, 016; 016 waits on 014").

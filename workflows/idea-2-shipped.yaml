@@ -1,4 +1,4 @@
-# Idea 2 Shipped: Idea 2 Backlog, then Backlog 2 Shipped on the items it wrote, in one run (Cockpit spec §9.5).
+# Idea 2 Shipped: Idea 2 Backlog, then Backlog 2 Shipped's build on the items it wrote, in one run (Cockpit spec §9.5).
 name: Idea 2 Shipped
 description: Ask for a design, preflight an idea into a spec and backlog items, build each with review, review the whole and fix what it finds, then merge into the base branch with the items marked done.
 
@@ -43,9 +43,9 @@ steps:
     role: planner
     skill: cockpit/backlog-items
     reads: [spec.md]
-    writes: [items.md]
+    writes: [items.md, picks.txt, tickets.md, tickets.json, 'tickets/*.md']
     outcomes: [READY]
-    prompt: Split `{{spec.file}}` into backlog items in `docs/backlog/`, save the spec in `docs/backlog/specs/`, commit them on `{{run.branch}}`, and write the index the next gate shows to `{{run.folder}}/items.md`.
+    prompt: Split `{{spec.file}}` into backlog items in `docs/backlog/`, save the spec in `docs/backlog/specs/`, commit them on `{{run.branch}}`, and write the index the next gate shows to `{{run.folder}}/items.md`. This run builds them next, so also write the run's tickets for them to `{{run.folder}}`.
 
   approve-items:
     name: Approve items
@@ -54,16 +54,6 @@ steps:
     on:
       CHANGES: items
       REJECT: end
-
-  # Turns the items this run just wrote into its tickets, asking nothing.
-  pick:
-    name: Pick items
-    role: planner
-    skill: cockpit/backlog-pick
-    reads: [items.md]
-    writes: [picks.txt, tickets.md, tickets.json, 'tickets/*.md']
-    outcomes: [READY]
-    prompt: Pick exactly the items `{{run.folder}}/items.md` lists, the ones this run wrote, without asking, and write the run's tickets to `{{run.folder}}`. Keep `{{run.folder}}/spec.md` as it is.
 
   implement:
     name: Implement

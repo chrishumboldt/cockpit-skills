@@ -32,7 +32,7 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Fix (`fix`) | `implement` | `final-review-*.md`, `spec.md`, `gate-ship.md` (engine, after Ship's Request changes) | `fix.md`: what it changed and why; commits on the integration branch | `DONE` |
 | Ship (`ship`) | gate | shows `final-review-code.md` | `gate-ship.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
 
-**In Idea 2 Shipped** the items step and Approve items come after Review spec, then Pick items (`backlog-pick` taking exactly the items in `items.md`, asking nothing) writes the tickets the fan-out builds; the backlog workflows' steps are in the table below.
+**In Idea 2 Shipped** Write backlog items and Approve items come after Review spec; Write backlog items also writes the run's tickets (`picks.txt`, `tickets.md`, `tickets.json`, `tickets/*.md`), which the fan-out builds. There is no Pick step.
 
 **Routes after the fan-out.** Final review's `PASS` skips to Ship and `CHANGES` goes to Fix. Fix's `DONE` goes back to Final review, at most three times. Ship's Request changes goes to Fix with the notes in `gate-ship.md`; Approve runs Merge; Reject ends the run. A failed Merge opens its failure gate.
 
