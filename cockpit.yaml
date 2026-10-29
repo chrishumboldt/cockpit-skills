@@ -6,6 +6,6 @@ description: Cockpit's own workflows and skills, around a backlog kept in the re
 # Idea 2 Backlog names only `planner`; Backlog 2 Shipped and Idea 2 Shipped name all four (§9.5).
 roles:
   planner: { suggest: { provider: claude, model: opus, effort: medium } }
-  implementer: { suggest: { provider: claude, model: opus, effort: medium } }
+  implementer: { suggest: { provider: claude, model: sonnet, effort: medium } }
   reviewer: { suggest: { provider: claude, model: opus, effort: high } }
   smell-checker: { suggest: { provider: claude, model: sonnet, effort: medium } }
