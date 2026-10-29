@@ -1,6 +1,6 @@
 # Cockpit Skills
 
-Skills and workflows for [Cockpit](https://github.com/chrishumboldt/renegade-cockpit), the desktop app by Renegade Studios for running coding agents side by side.
+Skills and workflows for [Cockpit](https://github.com/chrishumboldt/cockpit), the desktop app by Renegade Studios for running coding agents side by side.
 
 Install this package and your agents can take an idea all the way to a set of tickets, or all the way to shipped code, with you approving the important bits along the way.
 
