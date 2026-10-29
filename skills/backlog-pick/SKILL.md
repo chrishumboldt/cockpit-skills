@@ -9,16 +9,16 @@ disable-model-invocation: false
 You run the Pick items step of a Cockpit `Backlog 2 Shipped` run. You are interactive: the user answers you in the chat. The format is in `docs/backlog/README.md`.
 
 ## 1. Offer
-Read every item in `docs/backlog/`. Use the session's question card (your `AskUserQuestion` tool) when the answer is a pick between options, and plain text when it needs the user's words.
+Read every item in `docs/backlog/`. Use the session's question card (your `AskUserQuestion` tool) for every question that is a pick between options or a yes / no, and plain text when the answer needs the user's words. Text typed in a card's Other field is taken as the user's words.
 
 - **No `ready` item:** write no tickets and report `NONE` without asking.
 - **1–4 `ready` items:** ask with one multi-select question card, one option per ready item. A card needs at least 2 options, so with a single ready item the options are that item ("NNN · Title") and "None". The option's label is the number and title; its description gives kind, area, and `blockedBy` / `needs` when set, marking one whose blockers aren't done ("needs 014 first"). Put one line on how many `idea` items wait for shaping in the question text. The picked options are the pick; ticking "None" means nothing is picked. An answer typed in the card's Other field ("all ux", "1-3") is handled like a typed answer below; typed numbers are backlog item numbers, not card positions.
 - **More than 4 `ready` items** (a card holds at most 4 options): list them as a numbered list, one line each with the same details, and under it one line on how many `idea` items wait for shaping. Ask in plain text which to build; the answer may be numbers, a range or a filter ("all ux").
 
 ## 2. Check the pick
-Ask the first three with a yes / no question card.
+Ask the first three as yes / no cards.
 
-- An item whose blockers aren't done and aren't picked: name them and ask whether to add them (text typed in Other is taken as the user's words).
+- An item whose blockers aren't done and aren't picked: name them and ask whether to add them.
 - An item with `needs`: show it and ask whether it's met.
 - An item too thin to build safely (no clear behaviour or acceptance, or plainly bigger than one sitting): say so and suggest shaping it with `Idea 2 Backlog` first, and ask whether to build it anyway.
 - Staleness, for each picked item, before any ticket is written. Read the files, symbols and labels it names as they are on `origin/<base>` after a `git fetch`, and what has landed since its `added` date: later backlog items (`done` ones too) that touch the same thing, and the base's commits on those files (`git log --since=<added> -- <files>`). Flag the item, with one line of evidence, when it is:
@@ -26,7 +26,7 @@ Ask the first three with a yes / no question card.
   - **Superseded**: a later item reverses or replaces it; name that item.
   - **Moved**: a file, symbol or label it names no longer exists or was renamed.
 
-  Ask about each flagged item with a question card: build it anyway, drop it from this run, or mark it in the backlog (`status: idea` with a line on why, or `done` with the date when it's already there). Edit a marked item and commit it on the run's branch (`git add docs/backlog/<file> && git commit -m "Backlog: mark NNN <status>"`), so the land step merges it in. If nothing is left to build, commit the mark to the base the way `backlog-add` does (temporary worktree on the fetched base, push), then report `NONE`. A dropped or marked item is left out of the tickets, `tickets.json`, `spec.md` and `picks.txt`; only items being built go in them. An item with no flag goes through without a question. This check only reads; it never runs builds or tests.
+  Ask about each flagged item: build it anyway, drop it from this run, or mark it in the backlog (`status: idea` with a line on why, or `done` with the date when it's already there). Edit a marked item and commit it on the run's branch (`git add docs/backlog/<file> && git commit -m "Backlog: mark NNN <status>"`), so the land step merges it in. If nothing is left to build, commit the mark to the base the way `backlog-add` does (temporary worktree on the fetched base, push), then report `NONE`. A dropped or marked item is left out of the tickets, `tickets.json`, `spec.md` and `picks.txt`; only items being built go in them. An item with no flag goes through without a question. This check only reads; it never runs builds or tests.
 - Nothing picked, or nothing ready: write no tickets and report `NONE`.
 
 ## 3. Write the run's tickets

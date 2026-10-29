@@ -25,7 +25,7 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Review spec (`review-spec`) | gate | shows `spec.md` | `gate-spec.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
 | Implement › Implement (`implement`, per ticket) | `implement` | `spec.md`, the ticket's `tickets/NN-<slug>.md` (both from the run folder), `review-*.md` (the lane's) | lane folder: `build.md`: Built, Verified, Review findings, Left; commits on `{{item.branch}}` | none (summary only) |
 | Implement › Code review | `code-review`, correctness | the ticket file, `spec.md`, the lane's diff | lane folder: `review-code.md` | `PASS`, `CHANGES` |
-| Implement › Try merge (`try-merge`, per ticket) | `run:` `git merge --no-ff {{item.branch}}`; on a conflict, or when the lane adds a numbered file (`NNNN-…`) whose number (dated names excepted) the run branch has added in that folder since the lane forked, it lists the files and aborts the merge, so the worktree is clean | | lane folder: the step's log (engine) | `PASS` (to Merge resolved lane), `FAIL` (to Resolve merge) |
+| Implement › Try merge (`try-merge`, per ticket) | `run:` `git merge --no-ff {{item.branch}}`; aborts the merge, leaving the worktree clean, on a conflict or a numbered-file clash (the rule is in the script) | | lane folder: the step's log (engine) | `PASS` (to Merge resolved lane), `FAIL` (to Resolve merge) |
 | Implement › Resolve merge (`resolve`, per ticket, only after a conflict) | `resolve-merge` | `spec.md`, `tickets/*.md` | lane folder: `resolve.md`; the merge commit on the lane branch (the run branch merged into it, in the lane's worktree) | `DONE` |
 | Implement › Merge resolved lane (`merge`, per ticket) | `run:` the same merge, the same script, which is a no-op after Try merge and merges the resolved lane after Resolve merge; it counts the ticket merged. `on_stop: git merge --abort` | | lane folder: the step's log (engine) | `PASS`, `FAIL` |
 | Final review › Code review | `code-review`, correctness | `spec.md`, the integration branch's diff | `final-review-code.md` | `PASS`, `CHANGES` |
@@ -64,3 +64,7 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Merge (`land`, Backlog 2 Shipped) | `run:` sets the picked items to `status: done` with a `done:` date, commits, merges into `{{run.base}}` (`--no-ff`) and pushes it | `picks.txt` | the step's log (engine) | `PASS`, `FAIL` |
 
 **Your own steps.** A project that wants more (its full test suites, screenshots to look at) copies Backlog 2 Shipped into its local package and adds `run:` steps there.
+
+## Known limit: the merge script is copied
+
+The Try merge and Merge resolved lane `run:` scripts are byte-identical, in both shipped workflows (four copies). A `run:` executes in the run folder, not in this repo, so it can't call a script file kept here, and Merge can't loop back to Try merge: `end` and shell-step loops aren't allowed inside a fan-out (`skills/write-workflow/format.md`). Until the engine allows either, change all four copies together.

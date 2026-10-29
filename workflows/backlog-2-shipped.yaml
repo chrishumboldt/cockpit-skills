@@ -39,7 +39,7 @@ steps:
           CHANGES: { to: implement, max: 2 }
 
       # A conflicted merge aborts, so the run worktree stays clean and Retry works; the log names the files.
-      # The conflict goes to Resolve merge, which merges the run branch into the lane in the lane's own worktree, before it goes to the user. Merge below then
+      # The conflict goes to Resolve merge, which merges the run branch into the lane in the lane's own worktree, before it goes to the user. Merge resolved lane below then
       # merges the lane cleanly (or fails to the user if the run branch moved again).
       # Merge's run: below is a copy of this script (and the same in the other shipped workflow); change all together.
       try-merge:
