@@ -147,13 +147,13 @@ steps:
       sh -c '
       branch=$1
       gh pr merge "$branch" --merge --auto || exit 1
-      state=$(gh pr view "$branch" --json state --jq .state) || exit 1
-      url=$(gh pr view "$branch" --json url --jq .url) || exit 1
+      info=$(gh pr view "$branch" --json state,url,mergeCommit --jq "[.state, .url, ((.mergeCommit.oid // \"\")[0:7])] | @tsv") || exit 1
+      set -- $info
+      state=$1 url=$2 commit=$3
       if [ "$state" = MERGED ]; then
         if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
           git push origin --delete "$branch" || exit 1
         fi
-        commit=$(gh pr view "$branch" --json mergeCommit --jq ".mergeCommit.oid[0:7]") || exit 1
         echo "Merged $url as $commit"
       else
         echo "Auto-merge is set on $url: it merges when the required checks pass, and its branch stays until then"
