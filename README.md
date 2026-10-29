@@ -18,9 +18,9 @@ Cockpit asks you which of your agents fill the package's roles (a planner, an im
 
 ## The two workflows
 
-### Idea → Tickets
+### Idea 2 Tickets
 
-Start it from any session with `/idea-to-tickets` and tell it what you want to build.
+Start it from any session with `/idea-2-tickets` and tell it what you want to build.
 
 1. **Design.** It asks once whether the work comes from a design (a link or an image) and studies it if so.
 2. **Preflight.** It questions you about the idea, one question at a time, until the decisions are made. It checks your repo's docs and code first so it never asks what the codebase already answers.
@@ -31,7 +31,7 @@ Start it from any session with `/idea-to-tickets` and tell it what you want to b
 
 Everything it writes goes into your project, under `.cockpit/runs/<run>/`: the design notes, the preflight notes, the spec, and one file per ticket. Nothing is pushed to GitHub or any issue tracker.
 
-### Idea → Shipped
+### Idea 2 Shipped
 
 The same six steps, then it builds the tickets:
 
@@ -42,7 +42,7 @@ The same six steps, then it builds the tickets:
 11. **Open pull request.** It pushes the branch and opens the pull request, titled by the spec's heading and its issue, with the spec as its description. When the spec names the GitHub issue it builds (`Issue: #418`), the title ends with `(#418)` and the description opens with `Closes #418`.
 12. **Merge pull request.** It merges the pull request into the branch the run started from, as a merge commit, and deletes the pushed branch. A merge that fails (a conflict, a required check) stops the run at that step, with the pull request left open.
 
-Idea → Shipped needs a version of Cockpit that can run steps in parallel. Until then Cockpit lists it but won't start it.
+Idea 2 Shipped needs a version of Cockpit that can run steps in parallel. Until then Cockpit lists it but won't start it.
 
 ## The skills
 

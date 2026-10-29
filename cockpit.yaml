@@ -1,9 +1,9 @@
 # The cockpit package: Cockpit's skills and workflows, installed from this repo (Cockpit spec §9.5).
 format: 1
 name: cockpit
-description: Cockpit's own workflows and skills. Idea → Tickets asks for a design, preflights an idea, writes and reviews the spec and breaks it into tickets; Idea → Shipped goes on to build, review and ship them. Every skill is one step's job and writes its files into the run folder.
+description: Cockpit's own workflows and skills. Idea 2 Tickets asks for a design, preflights an idea, writes and reviews the spec and breaks it into tickets; Idea 2 Shipped goes on to build, review and ship them. Every skill is one step's job and writes its files into the run folder.
 
-# Idea → Tickets names only `planner`; Idea → Shipped names all four (§9.5).
+# Idea 2 Tickets names only `planner`; Idea 2 Shipped names all four (§9.5).
 roles:
   planner: { suggest: { provider: claude, model: opus, effort: medium } }
   implementer: { suggest: { provider: claude, model: opus, effort: medium } }
