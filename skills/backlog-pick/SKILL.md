@@ -9,12 +9,18 @@ disable-model-invocation: false
 You run the Pick items step of a Cockpit `Backlog 2 Shipped` run. You are interactive: the user answers you in the chat. The format is in `docs/backlog/README.md`.
 
 ## 1. Offer
-Read every item in `docs/backlog/`. List the `ready` ones as a numbered list, one line each: number, title, kind, area, and `blockedBy` / `needs` when set; mark one whose blockers aren't done ("needs 014 first"). Under it, one line on how many `idea` items wait for shaping. Ask which to build; the answer may be numbers, a range or a filter ("all ux").
+Read every item in `docs/backlog/`. Use the session's question card (your `AskUserQuestion` tool) for every question that is a pick between options or a yes / no, and plain text when the answer needs the user's words. Text typed in a card's Other field is taken as the user's words.
+
+- **No `ready` item:** write no tickets and report `NONE` without asking.
+- **1–4 `ready` items:** ask with one multi-select question card, one option per ready item. A card needs at least 2 options, so with a single ready item the options are that item ("NNN · Title") and "None". The option's label is the number and title; its description gives kind, area, and `blockedBy` / `needs` when set, marking one whose blockers aren't done ("needs 014 first"). Put one line on how many `idea` items wait for shaping in the question text. The picked options are the pick; ticking "None" means nothing is picked. An answer typed in the card's Other field ("all ux", "1-3") is handled like a typed answer below; typed numbers are backlog item numbers, not card positions.
+- **More than 4 `ready` items** (a card holds at most 4 options): list them as a numbered list, one line each with the same details, and under it one line on how many `idea` items wait for shaping. Ask in plain text which to build; the answer may be numbers, a range or a filter ("all ux").
 
 ## 2. Check the pick
+Ask the first three as yes / no cards.
+
 - An item whose blockers aren't done and aren't picked: name them and ask whether to add them.
 - An item with `needs`: show it and ask whether it's met.
-- An item too thin to build safely (no clear behaviour or acceptance, or plainly bigger than one sitting): say so and suggest shaping it with `Idea 2 Backlog` first, unless the user wants it built anyway.
+- An item too thin to build safely (no clear behaviour or acceptance, or plainly bigger than one sitting): say so and suggest shaping it with `Idea 2 Backlog` first, and ask whether to build it anyway.
 - Staleness, for each picked item, before any ticket is written. Read the files, symbols and labels it names as they are on `origin/<base>` after a `git fetch`, and what has landed since its `added` date: later backlog items (`done` ones too) that touch the same thing, and the base's commits on those files (`git log --since=<added> -- <files>`). Flag the item, with one line of evidence, when it is:
   - **Done already**: the base already behaves as the acceptance criteria say.
   - **Superseded**: a later item reverses or replaces it; name that item.
@@ -34,9 +40,10 @@ In the run folder, in build order (blockers first):
   ]
   ```
   `blockedBy` names only earlier ticket ids; `file` is relative to the run folder.
+- **Order items that overlap.** Lanes build side by side and their merges conflict when two tickets change the same file. For each ticket, note the files and areas it will change (from its What to build and the code it names). When two tickets will clearly touch the same files, make the later one `blockedBy` the earlier (reorder if needed so the blocker comes first), so they build one after another, and put the edge in both `tickets.json` and the ticket's `**Blocked by:**`. Don't add an edge for a loose area match; a real conflict goes to the Resolve merge step. Say each added edge in the report line.
 - `tickets.md`, the human index, as the `to-tickets` skill writes it, each ticket naming its item number.
 - `spec.md`, which the build steps read: titled "Build · <item numbers>", then the specs the items name (`docs/backlog/specs/…`), each once, and for an item with no spec its own body.
 - `picks.txt`: the picked items' paths, one per line, relative to the repository root. The land step marks them done.
 
 ## 4. Report
-Call `report_outcome` with `READY` and a one-line summary ("3 items: 014, 015, 016; 016 waits on 014"). Name any flagged items and what the user chose ("3 items: 014, 015, 016; 017 dropped, already done").
+Call `report_outcome` with `READY` and a one-line summary ("3 items: 014, 015, 016; 016 waits on 014"); say which waits are for overlapping files ("016 waits on 015: both change SkillsView.svelte"). Name any flagged items and what the user chose ("3 items: 014, 015, 016; 017 dropped, already done").

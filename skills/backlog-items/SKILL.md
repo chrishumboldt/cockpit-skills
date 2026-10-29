@@ -37,7 +37,7 @@ Slice the spec as the `to-tickets` skill does: vertical slices, each complete an
 ```
 
 ## When the prompt asks for the run's tickets too
-In `Idea 2 Shipped` the run builds the items you wrote right after the gate. Then also write, in the run folder, what its fan-out reads, exactly as the `backlog-pick` skill describes in its step 3: `tickets/NN-<slug>.md` per item, `tickets.json` (a bare JSON array of `{ id, item, slug, title, blockedBy, file }`, never an object around it), `tickets.md`, and `picks.txt` (the items' repo paths). Keep `spec.md` as it is. On a revision from the gate, rewrite them along with the items.
+In `Idea 2 Shipped` the run builds the items you wrote right after the gate. Then also write, in the run folder, what its fan-out reads, exactly as the `backlog-pick` skill describes in its step 3: `tickets/NN-<slug>.md` per item, `tickets.json` (a bare JSON array of `{ id, item, slug, title, blockedBy, file }`, never an object around it), `tickets.md`, and `picks.txt` (the items' repo paths). Order overlapping tickets as `backlog-pick` does: when two tickets will clearly touch the same files, the later one is `blockedBy` the earlier. Keep `spec.md` as it is. On a revision from the gate, rewrite them along with the items.
 
 ## 4. Back from the gate
 Request changes resumes you with the notes in `gate-items.md`: revise the items and `items.md` in place, commit again, and report again.
