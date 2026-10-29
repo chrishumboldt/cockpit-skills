@@ -16,7 +16,7 @@ Read every item in `docs/backlog/`. Use the session's question card (your `AskUs
 - **More than 4 `ready` items** (a card holds at most 4 options): list them as a numbered list, one line each with the same details, and under it one line on how many `idea` items wait for shaping. Ask in plain text which to build; the answer may be numbers, a range or a filter ("all ux").
 
 ## 2. Check the pick
-Ask each of these with a yes / no question card.
+Ask the first three with a yes / no question card.
 
 - An item whose blockers aren't done and aren't picked: name them and ask whether to add them (text typed in Other is taken as the user's words).
 - An item with `needs`: show it and ask whether it's met.
