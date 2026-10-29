@@ -20,7 +20,15 @@ Read every item in `docs/backlog/`. List the `ready` ones as a numbered list, on
 ## 3. Write the run's tickets
 In the run folder, in build order (blockers first):
 - `tickets/NN-<slug>.md` per item: `# NN: <NNN · title>`, `**Blocked by:**` mapped to the run's ticket ids, then the item's What to build, Acceptance criteria and Verified by.
-- `tickets.json` and `tickets.md`, as the `to-tickets` skill writes them, each ticket naming its item number.
+- `tickets.json`, the ticket set the engine reads: a bare JSON array, never an object around it, one entry per ticket with its item number:
+  ```json
+  [
+    { "id": "01", "item": "014", "slug": "<slug>", "title": "<Title>", "blockedBy": [], "file": "tickets/01-<slug>.md" },
+    { "id": "02", "item": "015", "slug": "<slug>", "title": "<Title>", "blockedBy": ["01"], "file": "tickets/02-<slug>.md" }
+  ]
+  ```
+  `blockedBy` names only earlier ticket ids; `file` is relative to the run folder.
+- `tickets.md`, the human index, as the `to-tickets` skill writes it, each ticket naming its item number.
 - `spec.md`, which the build steps read: titled "Build · <item numbers>", then the specs the items name (`docs/backlog/specs/…`), each once, and for an item with no spec its own body.
 - `picks.txt`: the picked items' paths, one per line, relative to the repository root. The land step marks them done.
 
