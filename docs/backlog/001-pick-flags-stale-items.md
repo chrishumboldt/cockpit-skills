@@ -1,8 +1,9 @@
 ---
-status: ready
+status: done
 kind: feature
 area: backlog-pick
 added: 2026-10-29
+done: 2026-10-29
 ---
 
 # 001 · Pick items flags stale items before writing tickets
