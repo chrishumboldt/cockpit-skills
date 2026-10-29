@@ -144,10 +144,16 @@ steps:
         grep -q "^done:" "$f" || sed -i "s/^added: .*/&\ndone: $today/" "$f"
       done < "$picks"
       git add docs/backlog && git commit -q -m "Backlog: mark $(tr "\n" " " < "$picks" | sed "s#docs/backlog/##g; s#-[^ ]*##g; s/ *$//") done" || true
-      git fetch -q origin "$base"
-      git checkout -q --detach "origin/$base"
-      git merge --no-ff --no-edit -m "Merge $branch into $base" "$branch"
-      git push -q origin "HEAD:$base"
+      # Main may move while this merges (another session pushing): fetch, merge and push again.
+      for try in 1 2 3; do
+        git fetch -q origin "$base"
+        git checkout -q --detach "origin/$base"
+        git merge --no-ff --no-edit -m "Merge $branch into $base" "$branch"
+        if git push -q origin "HEAD:$base"; then break; fi
+        [ "$try" = 3 ] && exit 1
+        echo "$base moved while merging; trying again" >&2
+        sleep 2
+      done
       echo "Merged into $base as $(git rev-parse --short HEAD)"
       git checkout -q "$branch"
       ' sh {{run.branch}} {{run.base}} {{run.folder}}/picks.txt

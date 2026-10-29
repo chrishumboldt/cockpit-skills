@@ -63,10 +63,16 @@ steps:
       sh -c '
       set -e
       branch=$1 base=$2
-      git fetch -q origin "$base"
-      git checkout -q --detach "origin/$base"
-      git merge --no-ff --no-edit -m "Backlog: $(git log -1 --format=%s "$branch")" "$branch"
-      git push -q origin "HEAD:$base"
+      # Main may move while this merges (another session pushing): fetch, merge and push again.
+      for try in 1 2 3; do
+        git fetch -q origin "$base"
+        git checkout -q --detach "origin/$base"
+        git merge --no-ff --no-edit -m "Backlog: $(git log -1 --format=%s "$branch")" "$branch"
+        if git push -q origin "HEAD:$base"; then break; fi
+        [ "$try" = 3 ] && exit 1
+        echo "$base moved while merging; trying again" >&2
+        sleep 2
+      done
       echo "Added to the backlog on $base as $(git rev-parse --short HEAD)"
       git checkout -q "$branch"
       ' sh {{run.branch}} {{run.base}}
