@@ -82,15 +82,17 @@ steps:
       # A conflicted merge aborts, so the run worktree stays clean and Retry works; the log names the files.
       # The conflict goes to Resolve merge, which merges the run branch into the lane in the lane's own worktree, before it goes to the user. Merge below then
       # merges the lane cleanly (or fails to the user if the run branch moved again).
+      # Merge's run: below is a copy of this script (and the same in the other shipped workflow); change all together.
       try-merge:
         name: Try merge
         # Merges without committing so a numbered file the lane adds beside one with the same number (two 0040- ADRs with different slugs, which git merges without a conflict) counts as a conflict too.
         run: |-
           sh -c '
           git merge --no-ff --no-commit "$1" || { git diff --name-only --diff-filter=U; git merge --abort; exit 1; }
-          clash=$(git diff --cached --name-only --diff-filter=A HEAD | while read -r f; do n=$(basename "$f" | grep -oE "^[0-9]+-") || continue; git ls-files "$(dirname "$f")/$n*" | grep -vxF "$f"; done)
+          base=$(git merge-base HEAD "$1")
+          clash=$(git diff --cached --name-only --diff-filter=A HEAD | while read -r f; do n=$(basename "$f" | grep -oE "^[0-9]+-") || continue; git diff --name-only --diff-filter=A "$base" HEAD -- "$(dirname "$f")/$n*"; done)
           [ -z "$clash" ] || { echo "Numbered files clash: $clash"; git merge --abort; exit 1; }
-          git rev-parse -q --verify MERGE_HEAD >/dev/null && git commit -q --no-edit
+          git rev-parse -q --verify MERGE_HEAD >/dev/null && { git commit -q --no-edit --no-verify || { git merge --abort; exit 1; }; }
           exit 0
           ' sh {{item.branch}}
         on_stop: git merge --abort
@@ -109,7 +111,16 @@ steps:
 
       merge:
         name: Merge
-        run: sh -c 'git merge --no-ff "$1" || { git diff --name-only --diff-filter=U; git merge --abort; exit 1; }' sh {{item.branch}}
+        # The same script as Try merge, so a numbered clash that Resolve merge left in place fails to the user too. Keep the two in sync.
+        run: |-
+          sh -c '
+          git merge --no-ff --no-commit "$1" || { git diff --name-only --diff-filter=U; git merge --abort; exit 1; }
+          base=$(git merge-base HEAD "$1")
+          clash=$(git diff --cached --name-only --diff-filter=A HEAD | while read -r f; do n=$(basename "$f" | grep -oE "^[0-9]+-") || continue; git diff --name-only --diff-filter=A "$base" HEAD -- "$(dirname "$f")/$n*"; done)
+          [ -z "$clash" ] || { echo "Numbered files clash: $clash"; git merge --abort; exit 1; }
+          git rev-parse -q --verify MERGE_HEAD >/dev/null && { git commit -q --no-edit --no-verify || { git merge --abort; exit 1; }; }
+          exit 0
+          ' sh {{item.branch}}
         on_stop: git merge --abort
 
   final-review:
