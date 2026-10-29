@@ -79,9 +79,28 @@ steps:
         on:
           CHANGES: { to: implement, max: 2 }
 
+      # A conflicted merge aborts, so the run worktree stays clean and Retry works; the log names the files.
+      # The conflict goes to Resolve merge before it goes to the user. Merge below then finds the branch
+      # already merged (a no-op that exits 0) and counts the ticket merged.
+      try-merge:
+        name: Try merge
+        run: git merge --no-ff {{item.branch}} || { git diff --name-only --diff-filter=U; git merge --abort; exit 1; }
+        on:
+          PASS: merge
+          FAIL: resolve
+
+      resolve:
+        name: Resolve merge
+        role: implementer
+        skill: cockpit/resolve-merge
+        reads: [spec.md, 'tickets/*.md']
+        writes: [resolve.md]
+        outcomes: [DONE]
+        prompt: Merging `{{item.branch}}` into `{{run.branch}}` conflicted. Merge it again, resolve the conflicts keeping both sides against the tickets in `{{run.folder}}/tickets/` and `{{run.folder}}/spec.md` (this lane's is `{{run.folder}}/{{item.file}}`), renumber clashing numbered files, run the focused tests and commit the merge. Write what you did to `resolve.md`.
+
       merge:
         name: Merge
-        run: git merge --no-ff {{item.branch}}
+        run: git merge --no-ff {{item.branch}} || { git diff --name-only --diff-filter=U; git merge --abort; exit 1; }
         on_stop: git merge --abort
 
   final-review:

@@ -60,6 +60,7 @@ Each skill does one step's job. The workflows call them; `backlog-add` and `writ
 | `write-spec` | Turns the notes into a spec. |
 | `to-tickets` | Splits a spec into tickets in the run folder; `backlog-items` and `backlog-pick` follow its slicing and its `tickets.json`. |
 | `implement` | Builds one ticket, test-first, and reports what it did. |
+| `resolve-merge` | Merges a lane again after a conflict, keeps both sides, renumbers clashing ADRs and commits. |
 | `code-review` | Reviews a change, for correctness or for code smells only. |
 | `backlog-items` | Splits a spec into backlog items. |
 | `backlog-pick` | Asks which ready backlog items to build and turns them into the run's tickets. |
