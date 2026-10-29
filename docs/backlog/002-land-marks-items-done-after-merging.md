@@ -1,8 +1,9 @@
 ---
-status: ready
+status: done
 kind: bug
 area: workflows
 added: 2026-10-29
+done: 2026-10-29
 ---
 
 # 002 · Merge marks items done after merging, on the fetched base
