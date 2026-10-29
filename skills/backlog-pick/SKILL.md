@@ -34,7 +34,7 @@ In the run folder, in build order (blockers first):
   ]
   ```
   `blockedBy` names only earlier ticket ids; `file` is relative to the run folder.
-- **Order items that overlap.** Lanes build side by side and their merges conflict when two tickets change the same file. For each ticket, note the files and areas it will change (from its What to build and the code it names). When two tickets will clearly touch the same files, make the later one `blockedBy` the earlier, so they build one after another, and put the edge in both `tickets.json` and the ticket's `**Blocked by:**`. Don't add an edge for a loose area match; a real conflict goes to the Resolve merge step. Say each added edge in the report line.
+- **Order items that overlap.** Lanes build side by side and their merges conflict when two tickets change the same file. For each ticket, note the files and areas it will change (from its What to build and the code it names). When two tickets will clearly touch the same files, make the later one `blockedBy` the earlier (reorder if needed so the blocker comes first), so they build one after another, and put the edge in both `tickets.json` and the ticket's `**Blocked by:**`. Don't add an edge for a loose area match; a real conflict goes to the Resolve merge step. Say each added edge in the report line.
 - `tickets.md`, the human index, as the `to-tickets` skill writes it, each ticket naming its item number.
 - `spec.md`, which the build steps read: titled "Build · <item numbers>", then the specs the items name (`docs/backlog/specs/…`), each once, and for an item with no spec its own body.
 - `picks.txt`: the picked items' paths, one per line, relative to the repository root. The land step marks them done.
