@@ -1,6 +1,6 @@
 ---
 name: backlog-add
-description: Add an item to the project's backlog (docs/backlog/) from a few words in the chat, without a workflow: for small, clear changes such as a UX fix or a shortcut. Writes the item, commits it to the base branch through a temporary worktree and pushes it. Use when asked to "add to the backlog", "note that for later" or "file that".
+description: "Add an item to the project's backlog (docs/backlog/) from a few words in the chat, without a workflow: for small, clear changes such as a UX fix or a shortcut. Writes the item, commits it to the base branch through a temporary worktree and pushes it. Use when asked to 'add to the backlog', 'note that for later' or 'file that'."
 disable-model-invocation: false
 ---
 
