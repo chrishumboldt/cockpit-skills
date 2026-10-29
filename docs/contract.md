@@ -50,3 +50,20 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 `id` is two digits; `blockedBy` names earlier ids only; `file` is relative to the run folder. Idea 2 Shipped's fan-out (`foreach: tickets.frontier`) runs these, and its prompts use `{{item.id}}`, `{{item.title}}` and `{{item.file}}` from them, with `{{item.branch}}` and `{{lane.folder}}` from Cockpit. A lane's own files (`build.md`, `review-*.md`) sit in its lane folder, `lanes/<item.id>/`.
 
 **A review file** starts with the line `OUTCOME: PASS` or `OUTCOME: CHANGES`, then its findings under Changes (must change) and Optional, each as `file:line`, the problem and what to change.
+
+## The backlog workflows
+
+`Idea 2 Backlog` and `Backlog 2 Shipped` share the steps above where they have the same keys, and add these. The backlog's format is `skills/backlog-items/format.md`; items live in `docs/backlog/` in the project, committed like code.
+
+| Step (id) | Skill | Reads | Writes | Outcomes |
+|---|---|---|---|---|
+| Write backlog items (`items`, Idea 2 Backlog) | `backlog-items` | `spec.md`, `docs/backlog/`, `gate-items.md` (engine, on a revision) | `docs/backlog/NNN-<slug>.md` and `docs/backlog/specs/<slug>.md`, committed on the run's branch; `items.md` (the index the gate shows) | `READY` |
+| Approve items (`approve-items`) | gate | shows `items.md` | `gate-items.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
+| Add to backlog (`land`, Idea 2 Backlog) | `run:` merge the run's branch into `{{run.base}}` (`--no-ff`, in the run worktree) and push it | | the step's log (engine) | `PASS`, `FAIL` |
+| Pick items (`pick`, Backlog 2 Shipped) | `backlog-pick`, interactive | `docs/backlog/` | `picks.txt` (the items' repo paths), `spec.md`, `tickets.md`, `tickets.json`, `tickets/*.md` | `READY`, `NONE` (ends the run) |
+| Checks (`checks`) | `run:` `.cockpit-hooks/checks` when executable, else skipped | | `checks.log`; `FAIL` goes to Fix (at most twice) | `PASS`, `FAIL` |
+| Shots (`shots`) | `run:` writes `look.md` from the lanes' `build.md` and `fix.md`, then appends `.cockpit-hooks/look <run folder> <shots>` | `picks.txt`, the items' `shots:` | `look.md` | `PASS`, `FAIL` |
+| Look and ship (`look`) | gate | shows `look.md` | `gate-look.md` (engine, on Request changes, read by Fix) | `APPROVE`, `CHANGES`, `REJECT` |
+| Merge (`land`, Backlog 2 Shipped) | `run:` sets the picked items to `status: done` with a `done:` date, commits, merges into `{{run.base}}` (`--no-ff`) and pushes it | `picks.txt` | the step's log (engine) | `PASS`, `FAIL` |
+
+**Project hooks.** A project opts into Checks and Shots with executables in `.cockpit-hooks/` at its root: `checks` (no arguments; exit 0 when everything passes) and `look` (the run folder, then the shot names; prints Markdown for `look.md`, for example a list of screenshot paths). Both run in the run worktree.

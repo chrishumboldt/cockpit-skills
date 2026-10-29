@@ -16,7 +16,9 @@ https://github.com/chrishumboldt/cockpit-skills
 
 Cockpit asks you which of your agents fill the package's roles (a planner, an implementer, a reviewer and a smell-checker), and then the workflows show up in your session's `/` menu. **Update** in the Skills view pulls new releases; **Remove** takes it all out again.
 
-## The two workflows
+## The workflows
+
+Two pairs. **Idea 2 Tickets** and **Idea 2 Shipped** take one idea now, through GitHub. **Idea 2 Backlog** and **Backlog 2 Shipped** keep a backlog in your repo instead: you add to it as you go and build from it in batches, with no issue tracker and no pull requests.
 
 ### Idea 2 Tickets
 
@@ -44,9 +46,31 @@ The same six steps, then it builds the tickets:
 
 Idea 2 Shipped needs a version of Cockpit that can run steps in parallel. Until then Cockpit lists it but won't start it.
 
+### Idea 2 Backlog
+
+For an idea that needs thinking before it can be built. The first four steps are Idea 2 Tickets' (Design, Preflight, Write spec, Review spec; Preflight also reads the backlog for overlap), then:
+
+5. **Write backlog items.** It splits the spec into items in `docs/backlog/`, each naming the items that block it (`blockedBy`) and anything else it needs (`needs`), and saves the spec beside them.
+6. **Approve items.** You read the split and approve it, ask for changes, or stop.
+7. **Add to backlog.** It merges the items into the branch the run started from and pushes it.
+
+Small, clear things don't need a workflow: ask any session to add them, and the `backlog-add` skill writes the item and pushes it.
+
+### Backlog 2 Shipped
+
+1. **Pick items.** It lists the ready items and asks which to build, checking blockers and `needs` with you.
+2. **Implement.** Each item is built on its own branch, reviewed for correctness and code smells, and merged into the run's branch; items that don't block each other build at the same time.
+3. **Final review**, and **Fix** when it or a later step asks for changes.
+4. **Checks.** Your project's own full checks, from `.cockpit-hooks/checks` when it has one (any executable: run your suites there). A failure goes to Fix.
+5. **Shots.** It writes `look.md`: what was built and fixed, then the output of `.cockpit-hooks/look <run folder> <shot names>` for the screens the items name in `shots:`, when your project has that hook.
+6. **Look and ship.** You read `look.md` and approve, or ask for changes, which go to Fix.
+7. **Merge.** It marks the items `done`, merges the run's branch into the branch the run started from as one merge commit, and pushes it.
+
+The backlog's format is in [skills/backlog-items/format.md](skills/backlog-items/format.md); the first item written copies it to `docs/backlog/README.md`.
+
 ## The skills
 
-Each skill does one step's job. They aren't meant to be called in chat; the workflows call them.
+Each skill does one step's job. The workflows call them; only `backlog-add` is meant for the chat.
 
 | Skill | What it does |
 |---|---|
@@ -56,6 +80,9 @@ Each skill does one step's job. They aren't meant to be called in chat; the work
 | `to-tickets` | Splits the spec into tickets, written as files. |
 | `implement` | Builds one ticket, test-first, and reports what it did. |
 | `code-review` | Reviews a change, for correctness or for code smells only. |
+| `backlog-items` | Splits a spec into backlog items. |
+| `backlog-pick` | Asks which ready backlog items to build and turns them into the run's tickets. |
+| `backlog-add` | Adds an item to the backlog from the chat, with no workflow. You can call this one yourself. |
 
 Cockpit itself teaches your home agent how to start and follow runs, so there's nothing to install for that.
 
