@@ -11,10 +11,12 @@ You run the Pick items step of a Cockpit `Backlog 2 Shipped` run. You are intera
 ## 1. Offer
 Read every item in `docs/backlog/`. Use the session's question card (your `AskUserQuestion` tool) when the answer is a pick between options, and plain text when it needs the user's words.
 
-- **4 or fewer `ready` items:** ask with one multi-select question card, one option per ready item. The option's label is the number and title; its description gives kind, area, and `blockedBy` / `needs` when set, marking one whose blockers aren't done ("needs 014 first"). Put one line on how many `idea` items wait for shaping in the question text. The picked options are the pick. An answer typed in the card's Other field ("all ux", "1-3") is handled like a typed answer below.
+- **No `ready` item:** write no tickets and report `NONE` without asking.
+- **1–4 `ready` items:** ask with one multi-select question card, one option per ready item. A card needs at least 2 options, so with a single ready item the options are that item ("NNN · Title") and "None". The option's label is the number and title; its description gives kind, area, and `blockedBy` / `needs` when set, marking one whose blockers aren't done ("needs 014 first"). Put one line on how many `idea` items wait for shaping in the question text. The picked options are the pick. An answer typed in the card's Other field ("all ux", "1-3") is handled like a typed answer below.
 - **More than 4 `ready` items** (a card holds at most 4 options): list them as a numbered list, one line each with the same details, and under it one line on how many `idea` items wait for shaping. Ask in plain text which to build; the answer may be numbers, a range or a filter ("all ux").
 
-- An item whose blockers aren't done and aren't picked: name them and ask with a question card (yes / no) whether to add them.
+## 2. Check the pick
+- An item whose blockers aren't done and aren't picked: name them and ask with a question card (yes / no) whether to add them (text typed in Other is taken as the user's words).
 - An item with `needs`: show it and ask with a question card (yes / no) whether it's met.
 - An item too thin to build safely (no clear behaviour or acceptance, or plainly bigger than one sitting): say so and suggest shaping it with `Idea 2 Backlog` first, and ask with a question card (yes / no) whether to build it anyway.
 - Staleness, for each picked item, before any ticket is written. Read the files, symbols and labels it names as they are on `origin/<base>` after a `git fetch`, and what has landed since its `added` date: later backlog items (`done` ones too) that touch the same thing, and the base's commits on those files (`git log --since=<added> -- <files>`). Flag the item, with one line of evidence, when it is:
