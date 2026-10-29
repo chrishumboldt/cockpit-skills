@@ -14,6 +14,7 @@ Read every item in `docs/backlog/`. List the `ready` ones as a numbered list, on
 ## 2. Check the pick
 - An item whose blockers aren't done and aren't picked: name them and ask whether to add them.
 - An item with `needs`: show it and ask whether it's met.
+- An item too thin to build safely (no clear behaviour or acceptance, or plainly bigger than one sitting): say so and suggest shaping it with `Idea 2 Backlog` first, unless the user wants it built anyway.
 - Nothing picked, or nothing ready: write no tickets and report `NONE`.
 
 ## 3. Write the run's tickets
@@ -22,6 +23,9 @@ In the run folder, in build order (blockers first):
 - `tickets.json` and `tickets.md`, as the `to-tickets` skill writes them, each ticket naming its item number.
 - `spec.md`, which the build steps read: titled "Build · <item numbers>", then the specs the items name (`docs/backlog/specs/…`), each once, and for an item with no spec its own body.
 - `picks.txt`: the picked items' paths, one per line, relative to the repository root. The land step marks them done.
+
+## When the prompt names the items
+In `Idea 2 Shipped` the prompt names the items to build (the ones the run just wrote, listed in `items.md`). Then skip steps 1 and 2: ask nothing, take exactly those items, and keep the run's `spec.md`, which already is their spec. Write the rest as in step 3.
 
 ## 4. Report
 Call `report_outcome` with `READY` and a one-line summary ("3 items: 014, 015, 016; 016 waits on 014").

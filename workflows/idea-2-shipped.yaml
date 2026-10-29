@@ -1,9 +1,8 @@
-# Idea 2 Shipped: Idea 2 Tickets, then implement, final review and fix, ship, open the pull request and merge it (Cockpit spec §9.5).
+# Idea 2 Shipped: Idea 2 Backlog, then Backlog 2 Shipped on the items it wrote, in one run (Cockpit spec §9.5).
 name: Idea 2 Shipped
-description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole and fix what it finds, then open a pull request and merge it.
+description: Ask for a design, preflight an idea into a spec and backlog items, build each with review, review the whole and fix what it finds, then merge into the base branch with the items marked done.
 
 steps:
-  # Optional: it asks once for a design and always writes design.md, a one-liner when declined.
   design:
     name: Design
     role: planner
@@ -19,7 +18,7 @@ steps:
     interactive: true
     context: { transcript: design }
     reads: [design.md]
-    prompt: Read `{{run.folder}}/design.md`; when it holds a design, question the idea against it. Write your notes to `{{run.folder}}/preflight-notes.md`.
+    prompt: Read `{{run.folder}}/design.md`; when it holds a design, question the idea against it. Read the backlog in `docs/backlog/` for items this idea overlaps or depends on. Write your notes to `{{run.folder}}/preflight-notes.md`.
     writes: [preflight-notes.md]
 
   spec:
@@ -28,7 +27,7 @@ steps:
     skill: cockpit/write-spec
     context: { transcript: preflight }
     reads: [preflight-notes.md, design.md, transcript-design.md]
-    prompt: Write the spec to `{{run.folder}}/spec.md` from `{{preflight.file}}`, `{{run.folder}}/transcript-design.md` (the idea as first told) and `{{run.folder}}/design.md`.
+    prompt: Write the spec to `{{run.folder}}/spec.md` from `{{preflight.file}}`, `{{run.folder}}/transcript-design.md` (the idea as first told) and `{{run.folder}}/design.md`. It goes into the backlog, not an issue tracker; leave out the `Issue:` line.
     writes: [spec.md]
 
   review-spec:
@@ -39,22 +38,32 @@ steps:
       CHANGES: spec
       REJECT: end
 
-  tickets:
-    name: Break into tickets
+  items:
+    name: Write backlog items
     role: planner
-    skill: cockpit/to-tickets
+    skill: cockpit/backlog-items
     reads: [spec.md]
-    writes: [tickets.md, tickets.json, 'tickets/*.md']
+    writes: [items.md]
     outcomes: [READY]
-    prompt: Break `{{spec.file}}` into tickets in `{{run.folder}}`.
+    prompt: Split `{{spec.file}}` into backlog items in `docs/backlog/`, save the spec in `docs/backlog/specs/`, commit them on `{{run.branch}}`, and write the index the next gate shows to `{{run.folder}}/items.md`.
 
-  approve-tickets:
-    name: Approve tickets
+  approve-items:
+    name: Approve items
     gate: approval
-    shows: tickets.md
+    shows: items.md
     on:
-      CHANGES: tickets
+      CHANGES: items
       REJECT: end
+
+  # Turns the items this run just wrote into its tickets, asking nothing.
+  pick:
+    name: Pick items
+    role: planner
+    skill: cockpit/backlog-pick
+    reads: [items.md]
+    writes: [picks.txt, tickets.md, tickets.json, 'tickets/*.md']
+    outcomes: [READY]
+    prompt: Pick exactly the items `{{run.folder}}/items.md` lists, the ones this run wrote, without asking, and write the run's tickets to `{{run.folder}}`. Keep `{{run.folder}}/spec.md` as it is.
 
   implement:
     name: Implement
@@ -66,7 +75,7 @@ steps:
         skill: cockpit/implement
         reads: [spec.md, 'tickets/*.md', 'review-*.md']
         writes: [build.md]
-        prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{spec.file}}`. Write what you built to `build.md`.
+        prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{run.folder}}/spec.md`. Run the tests that cover what you changed. Write what you built to `build.md`.
 
       review:
         name: Review
@@ -75,7 +84,7 @@ steps:
             name: Code review
             role: reviewer
             skill: cockpit/code-review
-            prompt: Review ticket {{item.id}}'s change for correctness against `{{run.folder}}/{{item.file}}` and `{{spec.file}}`; write the review to `review-code.md`.
+            prompt: Review ticket {{item.id}}'s change for correctness against `{{run.folder}}/{{item.file}}` and `{{run.folder}}/spec.md`; write the review to `review-code.md`.
           code-smell:
             name: Code smell
             role: smell-checker
@@ -98,7 +107,7 @@ steps:
         name: Code review
         role: reviewer
         skill: cockpit/code-review
-        prompt: Review the integration branch `{{run.branch}}` as a whole for correctness against `{{spec.file}}`; write the review to `{{run.folder}}/final-review-code.md`.
+        prompt: Review the integration branch `{{run.branch}}` as a whole for correctness against `{{run.folder}}/spec.md`; write the review to `{{run.folder}}/final-review-code.md`.
       code-smell:
         name: Code smell
         role: smell-checker
@@ -118,44 +127,36 @@ steps:
     reads: ['final-review-*.md', spec.md, gate-ship.md]
     writes: [fix.md]
     outcomes: [DONE]
-    prompt: This round fixes the integration branch `{{run.branch}}` as a whole, not a ticket. Fix what `{{run.folder}}/final-review-code.md`, `{{run.folder}}/final-review-smell.md` and, when it exists, `{{run.folder}}/gate-ship.md` ask for, against `{{spec.file}}`, and write what you changed to `{{run.folder}}/fix.md`.
+    prompt: This round fixes the integration branch `{{run.branch}}` as a whole, not a ticket. Fix what `{{run.folder}}/final-review-code.md` and `{{run.folder}}/final-review-smell.md` ask for, and, when it exists, the user's notes in `{{run.folder}}/gate-ship.md`, against `{{run.folder}}/spec.md`. Write what you changed to `{{run.folder}}/fix.md`.
     on:
-      DONE: { to: final-review, max: 2 }
+      DONE: { to: final-review, max: 3 }
 
   ship:
     name: Ship
     gate: approval
     shows: final-review-code.md
-    prompt: 'Ship `{{run.branch}}`: open its pull request and merge it into `{{run.base}}`?'
+    prompt: 'Ship `{{run.branch}}`: merge it into `{{run.base}}` and mark the items done?'
     on:
       CHANGES: fix
       REJECT: end
 
-  # Titled by the spec's heading and its issue; the body opens with "Closes #N" when the spec names one.
-  # A missing spec stops it before anything is pushed.
-  publish:
-    name: Open pull request
-    run: test -f {{spec.file}} && git push -u origin {{run.branch}} && printf '%s\n\n' {{spec.preface}} | cat - {{spec.file}} | gh pr create --head {{run.branch}} --base {{run.base}} --title {{spec.title}} --body-file -
-
-  # Asks GitHub to merge the pull request as a merge commit once its required checks pass (--auto), now
-  # when there are none. The remote branch is deleted only after the merge is done, and only if it is
-  # still there (GitHub may have deleted it); a pull request that is only queued keeps its branch. The
-  # last line says which: the merge commit, or that the merge is waiting on the checks.
-  merge-pr:
-    name: Merge pull request
+  # Marks the picked items done on the branch, merges it into the base as one merge commit, and pushes the base.
+  land:
+    name: Merge
     run: |-
       sh -c '
-      branch=$1
-      gh pr merge "$branch" --merge --auto || exit 1
-      info=$(gh pr view "$branch" --json state,url,mergeCommit --jq "[.state, .url, ((.mergeCommit.oid // \"\")[0:7])] | @tsv") || exit 1
-      set -- $info
-      state=$1 url=$2 commit=$3
-      if [ "$state" = MERGED ]; then
-        if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
-          git push origin --delete "$branch" || exit 1
-        fi
-        echo "Merged $url as $commit"
-      else
-        echo "Auto-merge is set on $url: it merges when the required checks pass, and its branch stays until then"
-      fi
-      ' sh {{run.branch}}
+      set -e
+      branch=$1 base=$2 picks=$3
+      today=$(date +%F)
+      while read -r f; do
+        [ -n "$f" ] || continue
+        sed -i "s/^status: .*/status: done/" "$f"
+        grep -q "^done:" "$f" || sed -i "s/^added: .*/&\ndone: $today/" "$f"
+      done < "$picks"
+      git add docs/backlog && git commit -q -m "Backlog: mark $(tr "\n" " " < "$picks" | sed "s#docs/backlog/##g; s#-[^ ]*##g; s/ *$//") done" || true
+      git fetch -q origin "$base"
+      git checkout -q --detach "origin/$base"
+      git merge --no-ff --no-edit "$branch"
+      git push -q origin "HEAD:$base"
+      echo "Merged into $base as $(git rev-parse --short HEAD)"
+      ' sh {{run.branch}} {{run.base}} {{run.folder}}/picks.txt

@@ -23,8 +23,6 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Preflight (`preflight`) | `preflight` | `transcript-design.md` (engine), `design.md`, the repo's glossary, ADRs, spec and code | `preflight-notes.md`: the idea as settled, decisions with reasons, terms, facts from the repo, possible ADRs, open questions | none (summary only) |
 | Write spec (`spec`) | `write-spec` | `preflight-notes.md`, `transcript-preflight.md` (engine), `transcript-design.md` (engine), `design.md`, `gate-spec.md` (engine, on a revision) | `spec.md`: a title, an `Issue: #N` line when the idea builds a GitHub issue, then Goal, Non-goals, Behaviour, Decisions, Testing, Acceptance, Open questions | none (summary only) |
 | Review spec (`review-spec`) | gate | shows `spec.md` | `gate-spec.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
-| Break into tickets (`tickets`) | `to-tickets` | `spec.md`, `gate-tickets.md` (engine, on a revision) | `tickets/NN-<slug>.md` (one per ticket, from `01` in dependency order: title, Blocked by, What to build, Acceptance criteria, Verified by); `tickets.md` (the human index: per ticket its number, title, Blocked by, what it delivers, file); `tickets.json` (the machine index, below) | `READY` |
-| Approve tickets (`approve-tickets`) | gate | shows `tickets.md` | `gate-tickets.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
 | Implement › Implement (`implement`, per ticket) | `implement` | `spec.md`, the ticket's `tickets/NN-<slug>.md` (both from the run folder), `review-*.md` (the lane's) | lane folder: `build.md`: Built, Verified, Review findings, Left; commits on `{{item.branch}}` | none (summary only) |
 | Implement › Review › Code review | `code-review`, correctness | the ticket file, `spec.md`, the lane's diff | lane folder: `review-code.md` | `PASS`, `CHANGES` |
 | Implement › Review › Code smell | `code-review`, smells only | the lane's diff | lane folder: `review-smell.md` | `PASS`, `CHANGES` |
@@ -33,10 +31,10 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Final review › Code smell | `code-review`, smells only | the integration branch's diff | `final-review-smell.md` | `PASS`, `CHANGES` |
 | Fix (`fix`) | `implement` | `final-review-*.md`, `spec.md`, `gate-ship.md` (engine, after Ship's Request changes) | `fix.md`: what it changed and why; commits on the integration branch | `DONE` |
 | Ship (`ship`) | gate | shows `final-review-code.md` | `gate-ship.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
-| Open pull request (`publish`) | `run:` `git push` and `gh pr create` against `{{run.base}}`, titled `{{spec.title}}`, the body `{{spec.preface}}` then `spec.md` | | the step's log (engine); the pull request's URL is its last line | `PASS`, `FAIL` |
-| Merge pull request (`merge-pr`) | `run:` `gh pr merge --merge` into `{{run.base}}`, then `git push origin --delete` of the run's branch | | the step's log (engine); its last line names the pull request and its merge commit (`Merged <url> as <sha>`) | `PASS`, `FAIL` |
 
-**Routes after the fan-out.** Final review's `PASS` skips to Ship and `CHANGES` goes to Fix. Fix's `DONE` goes back to Final review, at most twice. Ship's Request changes goes to Fix with the notes in `gate-ship.md`; Approve runs Open pull request, then Merge pull request; Reject ends the run. A failed `publish` or `merge-pr` opens its failure gate, with the pull request left open.
+**In Idea 2 Shipped** the items step and Approve items come after Review spec, then Pick items (`backlog-pick` taking exactly the items in `items.md`, asking nothing) writes the tickets the fan-out builds; the backlog workflows' steps are in the table below.
+
+**Routes after the fan-out.** Final review's `PASS` skips to Ship and `CHANGES` goes to Fix. Fix's `DONE` goes back to Final review, at most three times. Ship's Request changes goes to Fix with the notes in `gate-ship.md`; Approve runs Merge; Reject ends the run. A failed Merge opens its failure gate.
 
 **`tickets.json`** is a JSON array in build order, blockers first:
 
