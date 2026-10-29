@@ -1,6 +1,6 @@
-# Backlog 2 Shipped: pick ready backlog items, build them in lanes, check and look, then merge into the base and mark them done.
+# Backlog 2 Shipped: pick ready backlog items, build them in lanes, review the whole, then merge into the base and mark them done.
 name: Backlog 2 Shipped
-description: Pick items from the project's backlog, build each with review, run the project's checks, look at the result, then merge into the base branch and mark the items done.
+description: Pick items from the project's backlog, build each with review, review the whole and fix what it finds, then merge into the base branch and mark the items done.
 
 steps:
   pick:
@@ -24,7 +24,7 @@ steps:
         skill: cockpit/implement
         reads: [spec.md, 'tickets/*.md', 'review-*.md']
         writes: [build.md]
-        prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{run.folder}}/spec.md`. Run the tests that cover what you changed; the full suites run later in the Checks step. Write what you built to `build.md`.
+        prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{run.folder}}/spec.md`. Run the tests that cover what you changed. Write what you built to `build.md`.
 
       review:
         name: Review
@@ -65,54 +65,26 @@ steps:
     writes: ['final-review-*.md']
     outcomes: [PASS, CHANGES]
     on:
-      PASS: checks
+      PASS: ship
       CHANGES: fix
 
-  # Fixes what Final review, the checks or the user at Look found, on the integration branch.
+  # Fixes what Final review or Ship's Request changes found, on the integration branch.
   fix:
     name: Fix
     role: implementer
     skill: cockpit/implement
-    reads: ['final-review-*.md', spec.md, gate-look.md, checks.log]
+    reads: ['final-review-*.md', spec.md, gate-ship.md]
     writes: [fix.md]
     outcomes: [DONE]
-    prompt: This round fixes the integration branch `{{run.branch}}` as a whole, not a ticket. Fix what `{{run.folder}}/final-review-code.md` and `{{run.folder}}/final-review-smell.md` ask for, and, when they exist, the user's notes in `{{run.folder}}/gate-look.md` and the failures at the end of `{{run.folder}}/checks.log`, against `{{run.folder}}/spec.md`. Write what you changed to `{{run.folder}}/fix.md`.
+    prompt: This round fixes the integration branch `{{run.branch}}` as a whole, not a ticket. Fix what `{{run.folder}}/final-review-code.md` and `{{run.folder}}/final-review-smell.md` ask for, and, when it exists, the user's notes in `{{run.folder}}/gate-ship.md`, against `{{run.folder}}/spec.md`. Write what you changed to `{{run.folder}}/fix.md`.
     on:
       DONE: { to: final-review, max: 3 }
 
-  # The project's own full checks: `.cockpit-hooks/checks`, when the project has one. Its output is kept in checks.log for Fix.
-  checks:
-    name: Checks
-    run: |-
-      sh -c '
-      log=$1/checks.log
-      if [ ! -x .cockpit-hooks/checks ]; then echo "No .cockpit-hooks/checks in this project: skipped" | tee "$log"; exit 0; fi
-      .cockpit-hooks/checks > "$log" 2>&1; rc=$?
-      tail -40 "$log"; exit $rc
-      ' sh {{run.folder}}
-    on:
-      FAIL: { to: fix, max: 2 }
-
-  # look.md for the gate: what was built and fixed, then the project's look hook (screenshots) for the items' shots.
-  shots:
-    name: Shots
-    run: |-
-      sh -c '
-      set -e
-      folder=$1 look=$1/look.md
-      shots=$(sed -n "s/^shots: *//p" $(cat "$folder/picks.txt") | tr "," "\n" | sed "s/ //g" | sort -u | tr "\n" " ")
-      { sed -n "1p" "$folder/spec.md"; echo
-        for f in "$folder"/lanes/*/build.md "$folder/fix.md"; do [ -f "$f" ] && { cat "$f"; echo; }; done
-        echo "## Look"; } > "$look"
-      if [ -x .cockpit-hooks/look ] && [ -n "${shots% }" ]; then .cockpit-hooks/look "$folder" $shots >> "$look"
-      else echo "No screenshots: the items name no shots, or the project has no .cockpit-hooks/look." >> "$look"; fi
-      ' sh {{run.folder}}
-
-  look:
-    name: Look and ship
+  ship:
+    name: Ship
     gate: approval
-    shows: look.md
-    prompt: 'Look at the result. Approve merges `{{run.branch}}` into `{{run.base}}` and marks the items done.'
+    shows: final-review-code.md
+    prompt: 'Ship `{{run.branch}}`: merge it into `{{run.base}}` and mark the items done?'
     on:
       CHANGES: fix
       REJECT: end

@@ -42,7 +42,7 @@ The tests that prove it, and any check by hand.
 | `blockedBy` | no | Item numbers that must be `done` first. |
 | `needs` | no | Free text for what isn't an item: a setting, a package update, a decision. Shown when picking, never enforced. |
 | `spec` | no | The spec the item came from, relative to `docs/backlog/`. |
-| `shots` | no | The project's screenshot names for the screens it touches, comma-separated; `Backlog 2 Shipped` passes them to the project's look hook. |
+| `shots` | no | The project's screenshot names for the screens it touches, comma-separated; a workflow of your own may screenshot them. |
 | `added` | yes | The date it was written. |
 | `done` | no | The date it landed, set by `Backlog 2 Shipped`. |
 

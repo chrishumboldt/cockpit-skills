@@ -61,10 +61,8 @@ Small, clear things don't need a workflow: ask any session to add them, and the 
 1. **Pick items.** It lists the ready items and asks which to build, checking blockers and `needs` with you.
 2. **Implement.** Each item is built on its own branch, reviewed for correctness and code smells, and merged into the run's branch; items that don't block each other build at the same time.
 3. **Final review**, and **Fix** when it or a later step asks for changes.
-4. **Checks.** Your project's own full checks, from `.cockpit-hooks/checks` when it has one (any executable: run your suites there). A failure goes to Fix.
-5. **Shots.** It writes `look.md`: what was built and fixed, then the output of `.cockpit-hooks/look <run folder> <shot names>` for the screens the items name in `shots:`, when your project has that hook.
-6. **Look and ship.** You read `look.md` and approve, or ask for changes, which go to Fix.
-7. **Merge.** It marks the items `done`, merges the run's branch into the branch the run started from as one merge commit, and pushes it.
+4. **Ship.** You approve, or ask for changes, which go to Fix.
+5. **Merge.** It marks the items `done`, merges the run's branch into the branch the run started from as one merge commit, and pushes it.
 
 The backlog's format is in [skills/backlog-items/format.md](skills/backlog-items/format.md); the first item written copies it to `docs/backlog/README.md`.
 

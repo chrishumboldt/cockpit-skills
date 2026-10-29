@@ -61,9 +61,7 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Approve items (`approve-items`) | gate | shows `items.md` | `gate-items.md` (engine, on Request changes) | `APPROVE`, `CHANGES`, `REJECT` |
 | Add to backlog (`land`, Idea 2 Backlog) | `run:` merge the run's branch into `{{run.base}}` (`--no-ff`, in the run worktree) and push it | | the step's log (engine) | `PASS`, `FAIL` |
 | Pick items (`pick`, Backlog 2 Shipped) | `backlog-pick`, interactive | `docs/backlog/` | `picks.txt` (the items' repo paths), `spec.md`, `tickets.md`, `tickets.json`, `tickets/*.md` | `READY`, `NONE` (ends the run) |
-| Checks (`checks`) | `run:` `.cockpit-hooks/checks` when executable, else skipped | | `checks.log`; `FAIL` goes to Fix (at most twice) | `PASS`, `FAIL` |
-| Shots (`shots`) | `run:` writes `look.md` from the lanes' `build.md` and `fix.md`, then appends `.cockpit-hooks/look <run folder> <shots>` | `picks.txt`, the items' `shots:` | `look.md` | `PASS`, `FAIL` |
-| Look and ship (`look`) | gate | shows `look.md` | `gate-look.md` (engine, on Request changes, read by Fix) | `APPROVE`, `CHANGES`, `REJECT` |
+| Ship (`ship`, Backlog 2 Shipped) | gate | shows `final-review-code.md` | `gate-ship.md` (engine, on Request changes, read by Fix) | `APPROVE`, `CHANGES`, `REJECT` |
 | Merge (`land`, Backlog 2 Shipped) | `run:` sets the picked items to `status: done` with a `done:` date, commits, merges into `{{run.base}}` (`--no-ff`) and pushes it | `picks.txt` | the step's log (engine) | `PASS`, `FAIL` |
 
-**Project hooks.** A project opts into Checks and Shots with executables in `.cockpit-hooks/` at its root: `checks` (no arguments; exit 0 when everything passes) and `look` (the run folder, then the shot names; prints Markdown for `look.md`, for example a list of screenshot paths). Both run in the run worktree.
+**Your own steps.** A project that wants more (its full test suites, screenshots to look at) copies Backlog 2 Shipped into its local package and adds `run:` steps there.
