@@ -1,6 +1,6 @@
-# Idea → Shipped: Idea → Tickets, then implement, final review and fix, ship, open the pull request (Cockpit spec §9.5).
+# Idea → Shipped: Idea → Tickets, then implement, final review and fix, ship, open the pull request and merge it (Cockpit spec §9.5).
 name: Idea → Shipped
-description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole and fix what it finds, then open a pull request.
+description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole and fix what it finds, then open a pull request and merge it.
 
 steps:
   # Optional: it asks once for a design and always writes design.md, a one-liner when declined.
@@ -126,11 +126,36 @@ steps:
     name: Ship
     gate: approval
     shows: final-review-code.md
-    prompt: Ship `{{run.branch}}`, opening its pull request?
+    prompt: 'Ship `{{run.branch}}`: open its pull request and merge it into `{{run.base}}`?'
     on:
       CHANGES: fix
       REJECT: end
 
+  # Titled by the spec's heading and its issue; the body opens with "Closes #N" when the spec names one.
+  # A missing spec stops it before anything is pushed.
   publish:
     name: Open pull request
-    run: git push -u origin {{run.branch}} && gh pr create --head {{run.branch}} --base {{run.base}} --title "{{run.branch}}" --body-file {{spec.file}}
+    run: test -f {{spec.file}} && git push -u origin {{run.branch}} && printf '%s\n\n' {{spec.preface}} | cat - {{spec.file}} | gh pr create --head {{run.branch}} --base {{run.base}} --title {{spec.title}} --body-file -
+
+  # Asks GitHub to merge the pull request as a merge commit once its required checks pass (--auto), now
+  # when there are none. The remote branch is deleted only after the merge is done, and only if it is
+  # still there (GitHub may have deleted it); a pull request that is only queued keeps its branch. The
+  # last line says which: the merge commit, or that the merge is waiting on the checks.
+  merge-pr:
+    name: Merge pull request
+    run: |-
+      sh -c '
+      branch=$1
+      gh pr merge "$branch" --merge --auto || exit 1
+      info=$(gh pr view "$branch" --json state,url,mergeCommit --jq "[.state, .url, ((.mergeCommit.oid // \"\")[0:7])] | @tsv") || exit 1
+      set -- $info
+      state=$1 url=$2 commit=$3
+      if [ "$state" = MERGED ]; then
+        if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+          git push origin --delete "$branch" || exit 1
+        fi
+        echo "Merged $url as $commit"
+      else
+        echo "Auto-merge is set on $url: it merges when the required checks pass, and its branch stays until then"
+      fi
+      ' sh {{run.branch}}
