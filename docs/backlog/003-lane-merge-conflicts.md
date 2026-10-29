@@ -1,8 +1,9 @@
 ---
-status: ready
+status: done
 kind: bug
 area: workflows
 added: 2026-10-29
+done: 2026-10-30
 ---
 
 # 003 · A lane merge conflict stops the run, and Retry can't clear it
