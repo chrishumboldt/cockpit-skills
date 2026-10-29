@@ -26,7 +26,7 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 | Implement › Implement (`implement`, per ticket) | `implement` | `spec.md`, the ticket's `tickets/NN-<slug>.md` (both from the run folder), `review-*.md` (the lane's) | lane folder: `build.md`: Built, Verified, Review findings, Left; commits on `{{item.branch}}` | none (summary only) |
 | Implement › Code review | `code-review`, correctness | the ticket file, `spec.md`, the lane's diff | lane folder: `review-code.md` | `PASS`, `CHANGES` |
 | Implement › Try merge (`try-merge`, per ticket) | `run:` `git merge --no-ff {{item.branch}}`; on a conflict it lists the conflicted files and aborts the merge, so the worktree is clean | | lane folder: the step's log (engine) | `PASS` (to Merge), `FAIL` (to Resolve merge) |
-| Implement › Resolve merge (`resolve`, per ticket, only after a conflict) | `resolve-merge` | `spec.md`, `tickets/*.md` | lane folder: `resolve.md`; the merge commit on the run branch | `DONE` |
+| Implement › Resolve merge (`resolve`, per ticket, only after a conflict) | `resolve-merge` | `spec.md`, `tickets/*.md` | lane folder: `resolve.md`; the merge commit on the lane branch (the run branch merged into it, in the lane's worktree) | `DONE` |
 | Implement › Merge (`merge`, per ticket) | `run:` the same merge, which is a no-op once Try merge or Resolve merge merged; it counts the ticket merged. `on_stop: git merge --abort` | | lane folder: the step's log (engine) | `PASS`, `FAIL` |
 | Final review › Code review | `code-review`, correctness | `spec.md`, the integration branch's diff | `final-review-code.md` | `PASS`, `CHANGES` |
 | Final review › Code smell | `code-review`, smells only | the integration branch's diff | `final-review-smell.md` | `PASS`, `CHANGES` |
@@ -35,7 +35,7 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 
 **In Idea 2 Shipped** Write backlog items and Approve items come after Review spec; Write backlog items also writes the run's tickets (`picks.txt`, `tickets.md`, `tickets.json`, `tickets/*.md`), which the fan-out builds. There is no Pick step.
 
-**Routes after the fan-out.** Final review's `PASS` skips to Ship and `CHANGES` goes to Fix. Fix's `DONE` goes back to Final review, at most three times. Ship's Request changes goes to Fix with the notes in `gate-ship.md`; Approve runs Merge; Reject ends the run. A failed Merge opens its failure gate. A conflict in a lane's merge goes to Resolve merge first; only when that fails does the lane's failure gate open, with Fix it myself.
+**Routes after the fan-out.** Final review's `PASS` skips to Ship and `CHANGES` goes to Fix. Fix's `DONE` goes back to Final review, at most three times. Ship's Request changes goes to Fix with the notes in `gate-ship.md`; Approve runs Merge; Reject ends the run. A failed Merge opens its failure gate. A conflict in a lane's merge goes to Resolve merge first; when it can't, it reports `DONE` with a summary starting "Couldn't resolve", Merge conflicts again and fails, and the lane's failure gate opens with Fix it myself.
 
 **`tickets.json`** is a JSON array in build order, blockers first:
 
