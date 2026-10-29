@@ -47,11 +47,11 @@ Small, clear things don't need a workflow: ask any session to add them, and the 
 
 Idea 2 Backlog's first six steps, then Backlog 2 Shipped on exactly the items it just wrote, in one run: from an idea to merged code, with the items in the backlog marked `done` as its record. Start it with `/idea-2-shipped` and the idea.
 
-Want more in a run, such as your full test suites or screenshots to look at before shipping? Copy a workflow into your local package and add `run:` steps there.
+Want more in a run, such as your full test suites or screenshots to look at before shipping? Ask any session to adapt one with the `write-workflow` skill: it copies a workflow into your local package and adds `run:` steps there.
 
 ## The skills
 
-Each skill does one step's job. The workflows call them; only `backlog-add` is meant for the chat.
+Each skill does one step's job. The workflows call them; `backlog-add` and `write-workflow` are meant for the chat.
 
 | Skill | What it does |
 |---|---|
@@ -64,6 +64,7 @@ Each skill does one step's job. The workflows call them; only `backlog-add` is m
 | `backlog-items` | Splits a spec into backlog items. |
 | `backlog-pick` | Asks which ready backlog items to build and turns them into the run's tickets. |
 | `backlog-add` | Adds an item to the backlog from the chat, with no workflow. You can call this one yourself. |
+| `write-workflow` | Designs and writes a workflow with you, new or adapted from one of these, for your local package or your own. You can call this one yourself. |
 
 Cockpit itself teaches your home agent how to start and follow runs, so there's nothing to install for that.
 
