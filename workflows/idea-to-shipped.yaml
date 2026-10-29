@@ -132,11 +132,30 @@ steps:
       REJECT: end
 
   # Titled by the spec's heading and its issue; the body opens with "Closes #N" when the spec names one.
+  # A missing spec stops it before anything is pushed.
   publish:
     name: Open pull request
-    run: git push -u origin {{run.branch}} && printf '%s\n\n' {{spec.preface}} | cat - {{spec.file}} | gh pr create --head {{run.branch}} --base {{run.base}} --title {{spec.title}} --body-file -
+    run: test -f {{spec.file}} && git push -u origin {{run.branch}} && printf '%s\n\n' {{spec.preface}} | cat - {{spec.file}} | gh pr create --head {{run.branch}} --base {{run.base}} --title {{spec.title}} --body-file -
 
-  # A merge commit into the base, then the remote branch goes; its last line names the merge commit.
+  # Asks GitHub to merge the pull request as a merge commit once its required checks pass (--auto), now
+  # when there are none. The remote branch is deleted only after the merge is done, and only if it is
+  # still there (GitHub may have deleted it); a pull request that is only queued keeps its branch. The
+  # last line says which: the merge commit, or that the merge is waiting on the checks.
   merge-pr:
     name: Merge pull request
-    run: gh pr merge {{run.branch}} --merge && git push origin --delete {{run.branch}} && gh pr view {{run.branch}} --json url,mergeCommit --jq '"Merged \(.url) as \(.mergeCommit.oid[0:7])"'
+    run: |-
+      sh -c '
+      branch=$1
+      gh pr merge "$branch" --merge --auto || exit 1
+      state=$(gh pr view "$branch" --json state --jq .state) || exit 1
+      url=$(gh pr view "$branch" --json url --jq .url) || exit 1
+      if [ "$state" = MERGED ]; then
+        if git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+          git push origin --delete "$branch" || exit 1
+        fi
+        commit=$(gh pr view "$branch" --json mergeCommit --jq ".mergeCommit.oid[0:7]") || exit 1
+        echo "Merged $url as $commit"
+      else
+        echo "Auto-merge is set on $url: it merges when the required checks pass, and its branch stays until then"
+      fi
+      ' sh {{run.branch}}
