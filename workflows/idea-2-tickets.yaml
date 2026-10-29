@@ -1,5 +1,5 @@
-# Idea → Tickets: design, preflight, spec, review, tickets, approve (Cockpit spec §9.5).
-name: Idea → Tickets
+# Idea 2 Tickets: design, preflight, spec, review, tickets, approve (Cockpit spec §9.5).
+name: Idea 2 Tickets
 description: Ask for a design, preflight an idea, write and review the spec, break it into tickets and approve them.
 
 steps:

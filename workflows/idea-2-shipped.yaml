@@ -1,5 +1,5 @@
-# Idea → Shipped: Idea → Tickets, then implement, final review and fix, ship, open the pull request and merge it (Cockpit spec §9.5).
-name: Idea → Shipped
+# Idea 2 Shipped: Idea 2 Tickets, then implement, final review and fix, ship, open the pull request and merge it (Cockpit spec §9.5).
+name: Idea 2 Shipped
 description: Ask for a design, preflight an idea into a spec and tickets, build each ticket with review, review the whole and fix what it finds, then open a pull request and merge it.
 
 steps:

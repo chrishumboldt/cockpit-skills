@@ -47,6 +47,6 @@ Paths are in the run folder unless they start with `/` (the project folder). "En
 ]
 ```
 
-`id` is two digits; `blockedBy` names earlier ids only; `file` is relative to the run folder. Idea → Shipped's fan-out (`foreach: tickets.frontier`) runs these, and its prompts use `{{item.id}}`, `{{item.title}}` and `{{item.file}}` from them, with `{{item.branch}}` and `{{lane.folder}}` from Cockpit. A lane's own files (`build.md`, `review-*.md`) sit in its lane folder, `lanes/<item.id>/`.
+`id` is two digits; `blockedBy` names earlier ids only; `file` is relative to the run folder. Idea 2 Shipped's fan-out (`foreach: tickets.frontier`) runs these, and its prompts use `{{item.id}}`, `{{item.title}}` and `{{item.file}}` from them, with `{{item.branch}}` and `{{lane.folder}}` from Cockpit. A lane's own files (`build.md`, `review-*.md`) sit in its lane folder, `lanes/<item.id>/`.
 
 **A review file** starts with the line `OUTCOME: PASS` or `OUTCOME: CHANGES`, then its findings under Changes (must change) and Optional, each as `file:line`, the problem and what to change.
