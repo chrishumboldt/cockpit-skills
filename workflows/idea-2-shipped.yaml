@@ -146,7 +146,8 @@ steps:
       git add docs/backlog && git commit -q -m "Backlog: mark $(tr "\n" " " < "$picks" | sed "s#docs/backlog/##g; s#-[^ ]*##g; s/ *$//") done" || true
       git fetch -q origin "$base"
       git checkout -q --detach "origin/$base"
-      git merge --no-ff --no-edit "$branch"
+      git merge --no-ff --no-edit -m "Merge $branch into $base" "$branch"
       git push -q origin "HEAD:$base"
       echo "Merged into $base as $(git rev-parse --short HEAD)"
+      git checkout -q "$branch"
       ' sh {{run.branch}} {{run.base}} {{run.folder}}/picks.txt
