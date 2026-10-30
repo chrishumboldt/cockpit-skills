@@ -36,14 +36,23 @@ steps:
         writes: [review-code.md]
         outcomes: [PASS, CHANGES]
         on:
+          PASS: merge
           CHANGES: { to: implement, max: 2 }
 
-      # A conflicted merge aborts, so the run worktree stays clean and Retry works; the log names the files.
-      # The conflict goes to Resolve merge, which merges the run branch into the lane in the lane's own worktree, before it goes to the user. Merge resolved lane below then
-      # merges the lane cleanly (or fails to the user if the run branch moved again).
-      # Merge's run: below is a copy of this script (and the same in the other shipped workflow); change all together.
-      try-merge:
-        name: Try merge
+      # Review PASS skips Resolve merge. A conflicted merge aborts, so the run worktree stays clean;
+      # it loops back once to Resolve merge, which merges the run branch into the lane in the lane's
+      # own worktree, then Merge runs again. A second failure opens the loop-limit gate for the user.
+      resolve:
+        name: Resolve merge
+        role: implementer
+        skill: cockpit/resolve-merge
+        reads: [spec.md, 'tickets/*.md']
+        writes: [resolve.md]
+        outcomes: [DONE]
+        prompt: Merging `{{item.branch}}` into `{{run.branch}}` conflicted, or added a numbered file that clashes. In this lane's worktree, merge `{{run.branch}}` into `{{item.branch}}`, resolve the conflicts keeping both sides against the tickets in `{{run.folder}}/tickets/` and `{{run.folder}}/spec.md` (this lane's is `{{run.folder}}/{{item.file}}`), renumber clashing numbered files, run the focused tests and commit the merge on `{{item.branch}}`. Write what you did to `resolve.md`.
+
+      merge:
+        name: Merge
         # Merges without committing so a numbered file the lane adds beside one with the same number (two 0040- ADRs with different slugs, which git merges without a conflict) counts as a conflict too.
         run: |-
           sh -c '
@@ -64,39 +73,7 @@ steps:
           ' sh {{item.branch}}
         on_stop: git merge --abort
         on:
-          PASS: merge
-          FAIL: resolve
-
-      resolve:
-        name: Resolve merge
-        role: implementer
-        skill: cockpit/resolve-merge
-        reads: [spec.md, 'tickets/*.md']
-        writes: [resolve.md]
-        outcomes: [DONE]
-        prompt: Merging `{{item.branch}}` into `{{run.branch}}` conflicted, or added a numbered file that clashes. In this lane's worktree, merge `{{run.branch}}` into `{{item.branch}}`, resolve the conflicts keeping both sides against the tickets in `{{run.folder}}/tickets/` and `{{run.folder}}/spec.md` (this lane's is `{{run.folder}}/{{item.file}}`), renumber clashing numbered files, run the focused tests and commit the merge on `{{item.branch}}`. Write what you did to `resolve.md`.
-
-      merge:
-        name: Merge resolved lane
-        # The same script as Try merge, so a numbered clash that Resolve merge left in place fails to the user too. Keep the two in sync.
-        run: |-
-          sh -c '
-          # Merge without committing, so a conflict aborts and leaves the worktree clean.
-          git merge --no-ff --no-commit "$1" || { git diff --name-only --diff-filter=U; git merge --abort; exit 1; }
-          # Files the run branch added since the lane forked, to compare the new files of the lane against.
-          base=$(git merge-base HEAD "$1")
-          # Numbered clash: a file the lane adds whose NNNN- prefix a run-branch file already uses in that folder. Dated names (2026-10-30-x) are not numbers.
-          clash=$(git diff --cached --name-only --diff-filter=A HEAD | while read -r f; do
-            n=$(basename "$f" | grep -oE "^[0-9]+-") || continue
-            case $(basename "$f") in [0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*) continue;; esac
-            git diff --name-only --diff-filter=A "$base" HEAD -- "$(dirname "$f")/$n*"
-          done)
-          [ -z "$clash" ] || { echo "Numbered files clash: $clash"; git merge --abort; exit 1; }
-          # Commit the merge; a failed commit aborts it.
-          git rev-parse -q --verify MERGE_HEAD >/dev/null && { git commit -q --no-edit --no-verify || { git merge --abort; exit 1; }; }
-          exit 0
-          ' sh {{item.branch}}
-        on_stop: git merge --abort
+          FAIL: { to: resolve, max: 1 }
 
   final-review:
     name: Final review
