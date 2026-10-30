@@ -10,9 +10,10 @@ You check a repo is fit to fly Cockpit's workflows, once per repo, the way an ai
 
 ## 1. Find the commands
 Read the agent docs (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`), the manifest (`package.json`, `go.mod`, `pyproject.toml`, `Cargo.toml`, a `Makefile`) and the CI workflows. Work out:
-- **Type check** (when the language has one): `tsc --noEmit`, `go vet ./...`, `mypy .`.
-- **Focused tests**: how to run only the tests for some files or a package (`vitest related <files>`, `go test ./pkg/...`, `pytest tests/test_x.py`), not just the whole suite.
+- **Type check** (when the language has one): `tsc --noEmit`, `go vet ./...`, `cargo check`, `mypy .`.
+- **Focused tests**: how to run only the tests for some files or a package (`vitest related <files>`, `go test ./pkg/...`, `cargo test -p <crate>`, `pytest tests/test_x.py`), not just the whole suite.
 - **End-to-end tests**, when the repo has them, and how to run one spec.
+- **Other checks CI runs** that are cheap enough for a lane: a linter (`eslint`, `golangci-lint`, `cargo clippy`, `ruff`), a size or format check.
 - **Limits**: whether the machine needs worker caps; ask the user, since the repo can't say.
 
 Run each command once on a small target to check it works. A command you couldn't run goes down as unchecked.
@@ -26,6 +27,8 @@ A finished run merges into the branch it started from and pushes it. Check:
 Say whether the repo has a glossary (`GLOSSARY.md` or one its docs point to) and ADRs (`docs/adr/`). They are optional; the skills use them when they exist. Offer to start a `docs/backlog/` only when the user wants to add an item now.
 
 ## 4. Propose, then write
+Before you write the section, compare it with what the agent docs already say. A rule they already state (worker caps, a slot script) gets a pointer to where it lives, not a second copy that drifts. A line they state that your findings contradict (an e2e suite that isn't there, a command that fails) is stale: list it and offer to fix it.
+
 Show the user the section you would add to the agent docs the repo already uses (`CLAUDE.md` when it has none):
 
 ```markdown
@@ -33,7 +36,8 @@ Show the user the section you would add to the agent docs the repo already uses 
 - Type check: `<command>`
 - Focused tests: `<command>` (for <files | a package>)
 - End-to-end: `<command>` (one spec: `<command>`)
-- Limits: <worker caps>, or none
+- Other checks: `<command>`
+- Limits: <worker caps>, a pointer to where the docs state them, or none
 - Runs land on `<branch>`.
 ```
 
