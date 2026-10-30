@@ -1,6 +1,6 @@
 # Test-first: the loop and what makes a good test
 
-Reference for the Implement step's red → green loop. Read `GLOSSARY.md` first, so test names use the project's terms.
+Reference for the Implement step's red → green loop. Read the project's glossary first, when it has one, so test names use its terms.
 
 ## The loop
 

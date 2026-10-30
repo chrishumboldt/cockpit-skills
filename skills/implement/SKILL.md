@@ -27,7 +27,7 @@ When the slice is green, tidy what you wrote (names, duplication, a function gro
 
 ## 3. Verify, focused
 
-Run the type checker, then only the tests for what you touched: the test files you wrote or changed, the tests the runner relates to the files you changed (`vitest related <files>`), and the end-to-end specs that cover the behaviour. Never run a whole suite. Cap the workers on anything that fans out: `VITEST_MAX_WORKERS=4`, Playwright `--workers=2`. Every acceptance criterion is checked by a test or by hand before you finish.
+Use the commands the repo's agent docs (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`) name; when they name none, the ones its manifest and CI use. Run the type checker, if the language has one, then only the tests for what you touched: the test files you wrote or changed, the tests the runner relates to the files you changed (`vitest related <files>`, `go test ./pkg/...`, `pytest tests/test_x.py`), and the end-to-end tests that cover the behaviour. Never run a whole suite. Cap the workers on anything that fans out, at the limits the agent docs give (`VITEST_MAX_WORKERS=4`, Playwright `--workers=2` when they give none). Every acceptance criterion is checked by a test or by hand before you finish.
 
 ## 4. A fix round
 
@@ -48,7 +48,7 @@ The path the prompt gives:
 What now works, in a few lines, and the main parts changed.
 
 ## Verified
-Each command run and its result (`VITEST_MAX_WORKERS=4 npx vitest related src/a.ts`: 12 passed), and each acceptance criterion with how it was checked.
+Each command run and its result (`npx vitest related src/a.ts`: 12 passed), and each acceptance criterion with how it was checked.
 
 ## Review findings
 (A fix round only.) Each finding, by file:line, and what was done about it.
