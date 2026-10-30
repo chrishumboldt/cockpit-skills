@@ -152,7 +152,7 @@ steps:
     name: Ship
     gate: approval
     shows: final-review-code.md
-    prompt: 'Ship `{{run.branch}}`: merge it into `{{run.base}}` and mark the items done?'
+    prompt: 'Ship `{{run.branch}}`: merge it into `{{run.base}}` and mark the items done? The smell review is in `final-review-smell.md`.'
     on:
       CHANGES: fix
       REJECT: end

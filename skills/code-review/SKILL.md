@@ -34,7 +34,7 @@ Note the range and the commit list; the review names them.
 - tests that don't prove what Verified by says, or that pass by construction;
 - a break with the repo's documented standards (`CONTRIBUTING.md`, `CODING_STANDARDS.md`, the agent docs, the ADRs) the tooling doesn't already enforce.
 
-**Smells only.** Read the diff against the list in [smells.md](smells.md) and the repo's own standards; a documented repo standard wins over the list. Every smell is a judgement call: name it as "possible Feature Envy", never as a rule broken.
+**Smells only.** Read the diff against the list in [smells.md](smells.md) and the repo's own standards; a documented repo standard wins over the list. Every smell is a judgement call: name it as "possible Feature Envy", never as a rule broken. Smells go under **Optional**; only dead code the change adds or leaves behind, and duplication it adds, go under Changes, since each Changes finding costs a fix round and a second review.
 
 When the step reviews a fix round, an earlier review's findings come first: check each one was addressed.
 
