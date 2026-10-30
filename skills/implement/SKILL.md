@@ -21,6 +21,8 @@ Stay inside the ticket. Work another ticket needs is that ticket's.
 
 Work the **red → green** loop at the seams the spec's Testing section names, one behaviour at a time: a failing test, then the least code that passes it, then the next. [tdd.md](tdd.md) is the reference for the loop, what a good test is and where mocks belong; read it before the first test.
 
+Make the smallest change that meets the ticket. Before adding a file, function, type or option, check whether existing code can carry it, and delete what your change leaves unused. No abstraction, option or fallback the ticket doesn't ask for.
+
 When the slice is green, tidy what you wrote (names, duplication, a function grown long) with the tests still passing.
 
 ## 3. Verify, focused

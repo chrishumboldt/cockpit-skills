@@ -30,6 +30,7 @@ Note the range and the commit list; the review names them.
 - an acceptance criterion or spec behaviour missing or only partly done;
 - behaviour that is wrong: a bug, an edge case or error path mishandled, a race, a broken caller;
 - behaviour nobody asked for (scope creep);
+- code the change didn't need: a new file, function, type or option where existing code could carry it, or code the change leaves unused and didn't delete. Ask of every diff: what could be removed, or done with what's already there, without losing a behaviour the ticket asks for?
 - tests that don't prove what Verified by says, or that pass by construction;
 - a break with the repo's documented standards (`CONTRIBUTING.md`, `CODING_STANDARDS.md`, the agent docs, the ADRs) the tooling doesn't already enforce.
 
