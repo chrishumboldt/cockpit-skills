@@ -67,7 +67,7 @@ steps:
       for try in 1 2 3; do
         git fetch -q origin "$base"
         git checkout -q --detach "origin/$base"
-        git merge --no-ff --no-edit -m "Backlog: $(git log -1 --format=%s "$branch")" "$branch"
+        git merge --no-ff --no-edit -m "Merge $branch into $base" "$branch"
         if git push -q origin "HEAD:$base"; then break; fi
         [ "$try" = 3 ] && exit 1
         echo "$base moved while merging; trying again" >&2
