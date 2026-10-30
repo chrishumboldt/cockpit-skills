@@ -145,7 +145,7 @@ steps:
           awk -v d="$today" -v add="$add" "/^status: /&&!s{s=1;print \"status: done\";next} {print} add&&/^added: /{add=\"\";print \"done: \" d}" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
           marked="$marked $n"
         done < "$picks"
-        git add docs/backlog
+        git add -u docs/backlog
         git diff --cached --quiet || git commit -q -m "Backlog: mark$marked done"
         if git push -q origin "HEAD:$base"; then break; fi
         [ "$try" = 3 ] && exit 1
