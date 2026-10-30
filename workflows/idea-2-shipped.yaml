@@ -92,6 +92,7 @@ steps:
         outcomes: [DONE]
         prompt: Merging `{{item.branch}}` into `{{run.branch}}` conflicted, or added a numbered file that clashes. In this lane's worktree, merge `{{run.branch}}` into `{{item.branch}}`, resolve the conflicts keeping both sides against the tickets in `{{run.folder}}/tickets/` and `{{run.folder}}/spec.md` (this lane's is `{{run.folder}}/{{item.file}}`), renumber clashing numbered files, run the focused tests and commit the merge on `{{item.branch}}`. Write what you did to `resolve.md`.
 
+      # The same as the lane Merge in backlog-2-shipped.yaml: change both.
       merge:
         name: Merge
         # Merges without committing so a numbered file the lane adds beside one with the same number (two 0040- ADRs with different slugs, which git merges without a conflict) counts as a conflict too.
@@ -157,6 +158,7 @@ steps:
       REJECT: end
 
   # Merges the branch into the fetched base as one merge commit, marks the picked items done on top of it, and pushes the base.
+  # The same as Merge in backlog-2-shipped.yaml: change both.
   land:
     name: Merge
     run: |-
@@ -179,8 +181,9 @@ steps:
             missed="$missed $n"
             continue
           fi
-          sed -i "s/^status: .*/status: done/" "$f"
-          grep -q "^done:" "$f" || sed -i "s/^added: .*/&\ndone: $today/" "$f"
+          # Front matter only: the first status line, and done after added unless it has one. awk, not sed -i, so it runs on macOS too.
+          add=1; grep -q "^done:" "$f" && add=
+          awk -v d="$today" -v add="$add" "/^status: /&&!s{s=1;print \"status: done\";next} {print} add&&/^added: /{add=\"\";print \"done: \" d}" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
           marked="$marked $n"
         done < "$picks"
         git add docs/backlog
