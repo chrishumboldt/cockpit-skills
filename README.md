@@ -16,6 +16,13 @@ https://github.com/chrishumboldt/cockpit-skills
 
 Cockpit asks you which of your agents fill the package's roles (a planner, an implementer, a reviewer and a smell-checker), and then the workflows show up in your session's `/` menu. **Update** in the Skills view pulls new releases; **Remove** takes it all out again.
 
+## Before your first run
+
+- **A git repo with an `origin` you can push to.** The workflows that finish merge into the branch the run started from and push it there themselves, so that branch can't require pull requests. Start runs from a working branch (`beta`, `develop`) if your `main` is protected.
+- **Your test commands written down.** The Implement step runs only the tests for what it touched, using the commands your `CLAUDE.md` or `AGENTS.md` names (or, failing that, your manifest's and CI's). Put the type-check and focused-test commands there, and any worker caps your machine needs.
+- **A glossary and ADRs help but aren't needed.** The skills read `GLOSSARY.md` and `docs/adr/` when they exist, so the specs and tests use your terms.
+- `docs/backlog/` is made by the first item you add.
+
 ## The three workflows
 
 Work lives in a **backlog** in your repo, `docs/backlog/`, one Markdown file per item ([the format](skills/backlog-items/format.md)). No issue tracker and no pull requests: a run that ships merges into the branch it started from and pushes it.
@@ -41,7 +48,7 @@ Small, clear things don't need a workflow: ask any session to add them, and the 
 3. **Final review.** The whole result is reviewed once more.
 4. **Fix.** When Final review or you ask for changes, an agent fixes them and Final review looks again.
 5. **Ship.** You approve, or ask for changes, which go to Fix.
-6. **Merge.** It marks the items `done`, merges the run's branch into the branch the run started from as one merge commit, and pushes it.
+6. **Merge.** It merges the run's branch into the branch the run started from as one merge commit, marks the items `done` on top and pushes it.
 
 ### Idea 2 Shipped
 
