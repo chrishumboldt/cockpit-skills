@@ -32,7 +32,7 @@ steps:
         name: Code review
         role: reviewer
         skill: cockpit/code-review
-        prompt: Review ticket {{item.id}}'s change for correctness against `{{run.folder}}/{{item.file}}` and `{{run.folder}}/spec.md`; write the review to `review-code.md`.
+        prompt: Review ticket {{item.id}}'s change (its lane was cut from `{{run.branch}}`) for correctness against `{{run.folder}}/{{item.file}}` and `{{run.folder}}/spec.md`; write the review to `review-code.md`.
         writes: [review-code.md]
         outcomes: [PASS, CHANGES]
         on:
@@ -105,12 +105,12 @@ steps:
         name: Code review
         role: reviewer
         skill: cockpit/code-review
-        prompt: Review the integration branch `{{run.branch}}` as a whole for correctness against `{{run.folder}}/spec.md`; write the review to `{{run.folder}}/final-review-code.md`.
+        prompt: Review the integration branch `{{run.branch}}` as a whole, against its base `{{run.base}}`, for correctness against `{{run.folder}}/spec.md`; write the review to `{{run.folder}}/final-review-code.md`.
       code-smell:
         name: Code smell
         role: smell-checker
         skill: cockpit/code-review
-        prompt: Review the integration branch `{{run.branch}}` as a whole for code smells only; write the review to `{{run.folder}}/final-review-smell.md`.
+        prompt: Review the integration branch `{{run.branch}}` as a whole, against its base `{{run.base}}`, for code smells only; write the review to `{{run.folder}}/final-review-smell.md`.
     writes: ['final-review-*.md']
     outcomes: [PASS, CHANGES]
     on:

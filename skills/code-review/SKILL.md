@@ -17,8 +17,8 @@ The step prompt says which:
 
 ## 2. Find the change
 
-- A ticket's change is the work on the current branch: its commits since it left the branch it was made from (`git merge-base HEAD <that branch>`, usually the default branch) plus anything uncommitted.
-- A branch "as a whole" (the final review) is the diff from its merge-base with the default branch to its tip.
+- A ticket's change is the work on the current branch: its commits since it left the branch it was made from (`git merge-base HEAD <that branch>`; the prompt names it) plus anything uncommitted.
+- A branch "as a whole" (the final review) is the diff from its merge-base with the base the prompt names to its tip.
 - Check the range resolves and isn't empty before reviewing. An empty change is a finding of its own: report `CHANGES` with "Nothing to review on <range>".
 
 Note the range and the commit list; the review names them.

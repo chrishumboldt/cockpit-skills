@@ -19,7 +19,7 @@ Slice the spec as the `to-tickets` skill does: vertical slices, each complete an
 - `status` is `ready`, unless an open question in the spec decides the item: then `idea`, naming the question.
 
 ## 3. Write
-- Number from the highest item plus one, three digits, counting both the run's branch and the base as it is now, since other sessions add items while a run goes: `git fetch -q origin && git ls-tree --name-only "origin/$(git symbolic-ref --short refs/remotes/origin/HEAD | sed 's#^origin/##')" docs/backlog/`.
+- Number from the highest item plus one, three digits, counting both the run's branch and the base as it is now, since other sessions add items while a run goes: `git fetch -q origin && git ls-tree --name-only "origin/<base>" docs/backlog/`, with the base the prompt names.
 - Copy `spec.md` to `docs/backlog/specs/<spec slug>.md`; each item's `spec:` names it.
 - End that copy with a `## Backlog items` section listing the items it became, one line each: `- 014 · <Title>` (`NNN-<slug>.md`). Someone who opens the spec finds its items there; whether they're done stays in each item's `status`.
 - Each item: `docs/backlog/NNN-<slug>.md` in the format, `added:` today.

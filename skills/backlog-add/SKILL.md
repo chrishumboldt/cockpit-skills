@@ -18,7 +18,7 @@ If the person's words leave the behaviour unclear, ask one short question. Other
 The checkout the session works in may be a running app or have work in progress, so never write there:
 
 ```sh
-base=$(git symbolic-ref --short refs/remotes/origin/HEAD | sed 's#^origin/##')
+base=$(git symbolic-ref --short HEAD)
 git fetch -q origin "$base"
 tmp=$(mktemp -d) && git worktree add -q --detach "$tmp" "origin/$base"
 # write docs/backlog/NNN-<slug>.md in "$tmp" (and README.md when new)
@@ -27,7 +27,7 @@ git -C "$tmp" push -q origin "HEAD:$base"
 git worktree remove "$tmp"
 ```
 
-Number from the highest item on the fetched base, and check the number is still free right before you commit (`git -C "$tmp" ls-tree --name-only HEAD docs/backlog/`): other sessions add items too. If the push is refused because the base moved, fetch, rebase the one commit, check the number again (renumber the file and its heading if it was taken) and push again.
+The base is the branch the checkout is on, not the remote's default: a project checked out on `beta` files to `beta`. Number from the highest item on the fetched base, and check the number is still free right before you commit (`git -C "$tmp" ls-tree --name-only HEAD docs/backlog/`): other sessions add items too. If the push is refused because the base moved, fetch, rebase the one commit, check the number again (renumber the file and its heading if it was taken) and push again.
 
 ## 4. Say what you added
 One line per item: its number, title, status, and `blockedBy` / `needs` when set.

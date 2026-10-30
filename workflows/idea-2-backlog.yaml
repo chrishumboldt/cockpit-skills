@@ -45,7 +45,7 @@ steps:
     reads: [spec.md]
     writes: [items.md]
     outcomes: [READY]
-    prompt: Split `{{spec.file}}` into backlog items in `docs/backlog/`, save the spec in `docs/backlog/specs/`, commit them on `{{run.branch}}`, and write the index the next gate shows to `{{run.folder}}/items.md`.
+    prompt: Split `{{spec.file}}` into backlog items in `docs/backlog/`, save the spec in `docs/backlog/specs/`, commit them on `{{run.branch}}`, and write the index the next gate shows to `{{run.folder}}/items.md`. The run's base branch is `{{run.base}}`.
 
   approve-items:
     name: Approve items
