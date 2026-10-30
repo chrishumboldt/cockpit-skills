@@ -1,12 +1,12 @@
 ---
-name: project-setup
-description: "Gets a repo ready for Cockpit's workflows, once, from the chat: finds its type-check and focused-test commands, checks the base branch accepts a push, and proposes a Cockpit section for its agent docs. Use when asked to 'set up this repo for Cockpit', or before a project's first run."
+name: airworthy
+description: "Checks a repo is ready for Cockpit's workflows, once, before its first run: finds its type-check and focused-test commands, checks the base branch accepts a push, and proposes a section for its agent docs. Use when asked whether a repo is ready for Cockpit's workflows, or to make it ready."
 disable-model-invocation: false
 ---
 
-# Project setup
+# Airworthy
 
-You get a repo ready for Cockpit's workflows. They need three things the repo has to tell them: how to check a change, where a finished run lands, and the repo's own terms. Find them, show the user what you found, and write it down only when they agree.
+You check a repo is fit to fly Cockpit's workflows, once per repo, the way an aircraft is certified once and preflighted before every flight (the `preflight` skill is the per-idea check). They need three things the repo has to tell them: how to check a change, where a finished run lands, and the repo's own terms. Find them, show the user what you found, and write it down only when they agree.
 
 ## 1. Find the commands
 Read the agent docs (`CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`), the manifest (`package.json`, `go.mod`, `pyproject.toml`, `Cargo.toml`, a `Makefile`) and the CI workflows. Work out:
