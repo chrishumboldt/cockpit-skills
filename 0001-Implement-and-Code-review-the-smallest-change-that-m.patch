@@ -1,0 +1,39 @@
+From f9cc81a4c53fac863db266a858be49e49410f770 Mon Sep 17 00:00:00 2001
+From: "Annie (Ripple)" <annie@ripple.local>
+Date: Fri, 30 Oct 2026 07:03:50 +0000
+Subject: [PATCH] Implement and Code review: the smallest change that meets the
+ ticket
+
+---
+ skills/code-review/SKILL.md | 1 +
+ skills/implement/SKILL.md   | 2 ++
+ 2 files changed, 3 insertions(+)
+
+diff --git a/skills/code-review/SKILL.md b/skills/code-review/SKILL.md
+index 1f17423..a8ce744 100644
+--- a/skills/code-review/SKILL.md
++++ b/skills/code-review/SKILL.md
+@@ -30,6 +30,7 @@ Note the range and the commit list; the review names them.
+ - an acceptance criterion or spec behaviour missing or only partly done;
+ - behaviour that is wrong: a bug, an edge case or error path mishandled, a race, a broken caller;
+ - behaviour nobody asked for (scope creep);
++- code the change didn't need: a new file, function, type or option where existing code could carry it, or code the change leaves unused and didn't delete. Ask of every diff: what could be removed, or done with what's already there, without losing a behaviour the ticket asks for?
+ - tests that don't prove what Verified by says, or that pass by construction;
+ - a break with the repo's documented standards (`CONTRIBUTING.md`, `CODING_STANDARDS.md`, the agent docs, the ADRs) the tooling doesn't already enforce.
+ 
+diff --git a/skills/implement/SKILL.md b/skills/implement/SKILL.md
+index 17703ac..a686fde 100644
+--- a/skills/implement/SKILL.md
++++ b/skills/implement/SKILL.md
+@@ -21,6 +21,8 @@ Stay inside the ticket. Work another ticket needs is that ticket's.
+ 
+ Work the **red → green** loop at the seams the spec's Testing section names, one behaviour at a time: a failing test, then the least code that passes it, then the next. [tdd.md](tdd.md) is the reference for the loop, what a good test is and where mocks belong; read it before the first test.
+ 
++Make the smallest change that meets the ticket. Before adding a file, function, type or option, check whether existing code can carry it, and delete what your change leaves unused. No abstraction, option or fallback the ticket doesn't ask for.
++
+ When the slice is green, tidy what you wrote (names, duplication, a function grown long) with the tests still passing.
+ 
+ ## 3. Verify, focused
+-- 
+2.55.0
+
