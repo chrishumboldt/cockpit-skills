@@ -55,6 +55,7 @@ steps:
       CHANGES: items
       REJECT: end
 
+  # The same as Merge in bug-2-shipped.yaml: change both.
   # Merges the run's branch into the base as one merge commit, in the run worktree, and pushes the base.
   # The user's own checkout catches up on its next pull.
   land:

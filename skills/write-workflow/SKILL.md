@@ -15,7 +15,7 @@ Ask, one question at a time, only what you can't read from the repo:
 - What does the project need that a generic workflow doesn't do? Its own test commands, screenshots, a lock on heavy jobs, a deploy. Those are `run:` steps, written straight into the workflow, not conventions other projects must follow.
 - Which agent should do which step, given cost? Strong models where judgment matters (preflight, spec, final correctness review), cheaper ones for building and smell checks.
 
-Start from an existing workflow when one is close: read the installed packages' `workflows/*.yaml` (the `cockpit` package's three are a good base) and change the least that fits.
+Start from an existing workflow when one is close: read the installed packages' `workflows/*.yaml` (the `cockpit` package's four are a good base) and change the least that fits.
 
 ## 2. Package or local
 - **Local** (the user's own package, `~/.cockpit/packages/local/workflows/<id>.yaml`): for one project's needs. May name agents directly (`agent: Grunt`) and project commands. Skills are referenced with their package (`skill: cockpit/implement`).

@@ -1,0 +1,63 @@
+# Bug 2 Shipped: a bug reproduced with a failing test, diagnosed to its cause, fixed, reviewed, then merged into the base.
+name: Bug 2 Shipped
+description: Reproduce a bug with a failing test and find its cause, fix it, review the fix, then merge it into the base branch.
+
+steps:
+  diagnose:
+    name: Diagnose
+    role: planner
+    skill: cockpit/diagnose
+    interactive: true
+    writes: [diagnosis.md]
+    outcomes: [FOUND, NOT_FOUND]
+    prompt: Reproduce the bug with a failing test, find its cause, commit the test on `{{run.branch}}` and write the diagnosis to `{{run.folder}}/diagnosis.md`.
+    on:
+      NOT_FOUND: end
+
+  implement:
+    name: Implement
+    role: implementer
+    skill: cockpit/implement
+    reads: [diagnosis.md, 'review-*.md', gate-ship.md]
+    writes: [build.md]
+    prompt: Fix the bug in `{{run.folder}}/diagnosis.md` on `{{run.branch}}`. Its failing test is your first red; make it pass without weakening it. When they exist, address `{{run.folder}}/review-code.md` and the user's notes in `{{run.folder}}/gate-ship.md`. Write what you did to `{{run.folder}}/build.md`.
+
+  review:
+    name: Code review
+    role: reviewer
+    skill: cockpit/code-review
+    prompt: Review the fix on `{{run.branch}}`, against its base `{{run.base}}`, for correctness against `{{run.folder}}/diagnosis.md`; write the review to `{{run.folder}}/review-code.md`.
+    writes: [review-code.md]
+    outcomes: [PASS, CHANGES]
+    on:
+      CHANGES: { to: implement, max: 2 }
+
+  ship:
+    name: Ship
+    gate: approval
+    shows: review-code.md
+    prompt: 'Ship the fix on `{{run.branch}}`: merge it into `{{run.base}}`? The diagnosis is in `diagnosis.md`.'
+    on:
+      CHANGES: implement
+      REJECT: end
+
+  # The same as Add to backlog in idea-2-backlog.yaml: change both.
+  land:
+    name: Merge
+    run: |-
+      sh -c '
+      set -e
+      branch=$1 base=$2
+      # The base may move while this merges (another session pushing): fetch, merge and push again.
+      for try in 1 2 3; do
+        git fetch -q origin "$base"
+        git checkout -q --detach "origin/$base"
+        git merge --no-ff --no-edit -m "Merge $branch into $base" "$branch"
+        if git push -q origin "HEAD:$base"; then break; fi
+        [ "$try" = 3 ] && exit 1
+        echo "$base moved while merging; trying again" >&2
+        sleep 2
+      done
+      echo "Fixed on $base as $(git rev-parse --short HEAD)"
+      git checkout -q "$branch"
+      ' sh {{run.branch}} {{run.base}}

@@ -15,6 +15,8 @@ You run the Implement step for one ticket of a Cockpit run. Build that ticket, t
 - Any `review-*.md` beside them: when one reports `CHANGES`, this is a fix round (step 4).
 - The code you will change, the glossary and the ADRs in that area.
 
+A bug fix (Bug 2 Shipped) names `diagnosis.md` instead of a ticket: its Cause and Fix are your scope, and its committed failing test is your first red. Make that test pass without weakening it, and add a test for each other place the diagnosis lists.
+
 Stay inside the ticket. Work another ticket needs is that ticket's.
 
 ## 2. Build it test-first

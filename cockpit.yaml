@@ -1,9 +1,9 @@
 # The cockpit package: Cockpit's skills and workflows, installed from this repo (Cockpit spec §9.5).
 format: 1
 name: cockpit
-description: Cockpit's own workflows and skills, around a backlog kept in the repo. Idea 2 Backlog preflights an idea into a spec and backlog items; Backlog 2 Shipped builds, reviews and merges the items you pick; Idea 2 Shipped does both in one run. Every skill is one step's job.
+description: Cockpit's own workflows and skills, around a backlog kept in the repo. Idea 2 Backlog preflights an idea into a spec and backlog items; Backlog 2 Shipped builds, reviews and merges the items you pick; Idea 2 Shipped does both in one run; Bug 2 Shipped reproduces, diagnoses and fixes a bug. Every skill is one step's job.
 
-# Idea 2 Backlog names only `planner`; Backlog 2 Shipped and Idea 2 Shipped name all four (§9.5).
+# Idea 2 Backlog names only `planner`; Bug 2 Shipped names all but `smell-checker`; Backlog 2 Shipped and Idea 2 Shipped name all four (§9.5).
 roles:
   planner: { suggest: { provider: claude, model: opus, effort: medium } }
   implementer: { suggest: { provider: claude, model: sonnet, effort: medium } }

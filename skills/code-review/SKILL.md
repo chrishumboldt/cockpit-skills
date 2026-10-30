@@ -25,7 +25,7 @@ Note the range and the commit list; the review names them.
 
 ## 3. Review
 
-**Correctness.** Read the ticket file (its What to build and acceptance criteria) and `spec.md` (the behaviours and decisions it touches), then the diff and enough of the code around it to know it works. Look for:
+**Correctness.** Read the ticket file (its What to build and acceptance criteria) and `spec.md` (the behaviours and decisions it touches), then the diff and enough of the code around it to know it works. A bug fix is reviewed against `diagnosis.md` instead: the fix removes the cause it names (not only the symptom), covers the other places it lists, and its test failed before the fix (check it out on the commit before and run it) and wasn't weakened since. Look for:
 
 - an acceptance criterion or spec behaviour missing or only partly done;
 - behaviour that is wrong: a bug, an edge case or error path mishandled, a race, a broken caller;

@@ -23,7 +23,9 @@ Cockpit asks you which of your agents fill the package's roles (a planner, an im
 - **A glossary and ADRs help but aren't needed.** The skills read `GLOSSARY.md` and `docs/adr/` when they exist, so the specs and tests use your terms.
 - `docs/backlog/` is made by the first item you add.
 
-## The three workflows
+The `project-setup` skill does this for you: ask any session to "set up this repo for Cockpit". It finds the commands, checks the branch and proposes the section for your agent docs.
+
+## The four workflows
 
 Work lives in a **backlog** in your repo, `docs/backlog/`, one Markdown file per item ([the format](skills/backlog-items/format.md)). No issue tracker and no pull requests: a run that ships merges into the branch it started from and pushes it.
 
@@ -54,11 +56,21 @@ Small, clear things don't need a workflow: ask any session to add them, and the 
 
 Idea 2 Backlog's first six steps (its Write backlog items also writes the run's tickets), then Backlog 2 Shipped's build on exactly those items, in one run, with nothing to pick: from an idea to merged code, with the items in the backlog marked `done` as its record. Start it with `/idea-2-shipped` and the idea.
 
+### Bug 2 Shipped
+
+Start it with `/bug-2-shipped` and tell it the bug.
+
+1. **Diagnose.** It asks how to make the bug happen, reproduces it with a failing test, finds the root cause and commits the test. When it can't reproduce the bug, it says what would help and the run stops.
+2. **Implement.** The fix makes that test pass, at the cause the diagnosis names.
+3. **Code review.** The fix is checked against the diagnosis: the cause removed, not just the symptom, and the test failing before the fix. Sent back for changes at most twice.
+4. **Ship.** You approve, ask for changes, which go back to Implement, or stop.
+5. **Merge.** It merges the fix into the branch the run started from and pushes it.
+
 Want more in a run, such as your full test suites or screenshots to look at before shipping? Ask any session to adapt one with the `write-workflow` skill: it copies a workflow into your local package and adds `run:` steps there.
 
 ## The skills
 
-Each skill does one step's job. The workflows call them; `backlog-add` and `write-workflow` are meant for the chat.
+Each skill does one step's job. The workflows call them; `backlog-add`, `project-setup` and `write-workflow` are meant for the chat.
 
 | Skill | What it does |
 |---|---|
@@ -67,11 +79,13 @@ Each skill does one step's job. The workflows call them; `backlog-add` and `writ
 | `write-spec` | Turns the notes into a spec. |
 | `to-tickets` | Splits a spec into tickets in the run folder; `backlog-items` and `backlog-pick` follow its slicing and its `tickets.json`. |
 | `implement` | Builds one ticket, test-first, and reports what it did. |
+| `diagnose` | Reproduces a bug with a failing test and finds its root cause. |
 | `resolve-merge` | Merges a lane again after a conflict, keeps both sides, renumbers clashing ADRs and commits. |
 | `code-review` | Reviews a change, for correctness or for code smells only. |
 | `backlog-items` | Splits a spec into backlog items. |
 | `backlog-pick` | Asks which ready backlog items to build and turns them into the run's tickets. |
 | `backlog-add` | Adds an item to the backlog from the chat, with no workflow. You can call this one yourself. |
+| `project-setup` | Gets a repo ready for the workflows: its test commands, its branch, a section for its agent docs. You can call this one yourself. |
 | `write-workflow` | Designs and writes a workflow with you, new or adapted from one of these, for your local package or your own. You can call this one yourself. |
 
 Cockpit itself teaches your home agent how to start and follow runs, so there's nothing to install for that.
