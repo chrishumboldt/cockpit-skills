@@ -38,6 +38,8 @@ Note the range and the commit list; the review names them.
 
 When the step reviews a fix round, an earlier review's findings come first: check each one was addressed.
 
+**Checks you run.** Run only the focused checks the repo's agent docs name for a change (the type check and the tests related to the changed files), never a whole suite; the build step has run what it needed, and `build.md` says what. Run each check in the foreground and wait for it. The review ends in the turn it starts: write the file and report before you stop, and never end a turn to wait on work in the background, since a step ends with its turn.
+
 ## 4. Write the review
 
 Write the file the prompt names. Its first line is the outcome, exactly `OUTCOME: PASS` or `OUTCOME: CHANGES`, with nothing before it:
