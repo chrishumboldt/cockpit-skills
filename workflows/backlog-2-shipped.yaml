@@ -6,7 +6,7 @@ steps:
   pick:
     name: Pick items
     role: planner
-    skill: cockpit/backlog-pick
+    skill: cockpit:skill:backlog-pick
     interactive: true
     writes: [picks.txt, spec.md, tickets.md, tickets.json, 'tickets/*.md']
     outcomes: [READY, NONE]
@@ -21,7 +21,7 @@ steps:
       implement:
         name: Implement
         role: implementer
-        skill: cockpit/implement
+        skill: cockpit:skill:implement
         reads: [spec.md, 'tickets/*.md', 'review-*.md']
         writes: [build.md]
         prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{run.folder}}/spec.md`. Run the tests that cover what you changed. Write what you built to `build.md`.
@@ -31,7 +31,7 @@ steps:
       review:
         name: Code review
         role: reviewer
-        skill: cockpit/code-review
+        skill: cockpit:skill:code-review
         prompt: Review ticket {{item.id}}'s change (its lane was cut from `{{run.branch}}`) for correctness against `{{run.folder}}/{{item.file}}` and `{{run.folder}}/spec.md`; write the review to `review-code.md`.
         writes: [review-code.md]
         outcomes: [PASS, CHANGES]
@@ -45,7 +45,7 @@ steps:
       resolve:
         name: Resolve merge
         role: implementer
-        skill: cockpit/resolve-merge
+        skill: cockpit:skill:resolve-merge
         reads: [spec.md, 'tickets/*.md']
         writes: [resolve.md]
         outcomes: [DONE]
@@ -82,12 +82,12 @@ steps:
       code-review:
         name: Code review
         role: reviewer
-        skill: cockpit/code-review
+        skill: cockpit:skill:code-review
         prompt: Review the integration branch `{{run.branch}}` as a whole, against its base `{{run.base}}`, for correctness against `{{run.folder}}/spec.md`; write the review to `{{run.folder}}/final-review-code.md`.
       code-smell:
         name: Code smell
         role: smell-checker
-        skill: cockpit/code-review
+        skill: cockpit:skill:code-review
         prompt: Review the integration branch `{{run.branch}}` as a whole, against its base `{{run.base}}`, for code smells only; write the review to `{{run.folder}}/final-review-smell.md`.
     writes: ['final-review-*.md']
     outcomes: [PASS, CHANGES]
@@ -99,7 +99,7 @@ steps:
   fix:
     name: Fix
     role: implementer
-    skill: cockpit/implement
+    skill: cockpit:skill:implement
     reads: ['final-review-*.md', spec.md, gate-ship.md]
     writes: [fix.md]
     outcomes: [DONE]

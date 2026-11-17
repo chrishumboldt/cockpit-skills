@@ -15,7 +15,7 @@ In Backlog 2 Shipped (and Idea 2 Shipped, which has the same lane steps) each la
 
 ## What to build
 - **A failed lane merge cleans up after itself.** The merge step aborts a conflicted merge before it fails (`git merge --no-ff … || { git merge --abort; exit 1; }`), so the run worktree is clean and Retry really retries. The log still names the conflicted files.
-- **A conflicted merge goes to an agent before it goes to the user.** On a conflict the lane runs an agent step (role implementer, skill `cockpit/implement` or a small new one) in the run worktree: merge again, resolve keeping both sides against the two items' tickets and the spec, renumber clashing ADRs (or any other numbered files) to the next free number with their references, run the focused tests, commit the merge. If it can't, the lane fails to the user as now.
+- **A conflicted merge goes to an agent before it goes to the user.** On a conflict the lane runs an agent step (role implementer, skill `cockpit:skill:implement` or a small new one) in the run worktree: merge again, resolve keeping both sides against the two items' tickets and the spec, renumber clashing ADRs (or any other numbered files) to the next free number with their references, run the focused tests, commit the merge. If it can't, the lane fails to the user as now.
 - **Pick items orders overlapping items.** `backlog-pick` (and `backlog-items` when it writes the run's tickets) looks at the files and areas each ticket will change. When two tickets will clearly touch the same files, it makes the later one `blockedBy` the earlier, so they build one after another, and says so in its report line.
 
 ## Acceptance criteria

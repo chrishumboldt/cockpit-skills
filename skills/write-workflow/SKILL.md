@@ -18,7 +18,7 @@ Ask, one question at a time, only what you can't read from the repo:
 Start from an existing workflow when one is close: read the installed packages' `workflows/*.yaml` (the `cockpit` package's four are a good base) and change the least that fits.
 
 ## 2. Package or local
-- **Local** (the user's own package, `~/.cockpit/packages/local/workflows/<id>.yaml`): for one project's needs. May name agents directly (`agent: Grunt`) and project commands. Skills are referenced with their package (`skill: cockpit/implement`).
+- **Local** (the user's own package, `~/.cockpit/packages/local/workflows/<id>.yaml`): for one project's needs. May name agents directly (`agent: Grunt`) and project commands. Skills are referenced by skillset and kind (`skill: cockpit:skill:implement`).
 - **A package** (a repo others install): must stay generic. Name `role:`s declared in its `cockpit.yaml` (with a suggested model each), never agents, never one project's commands, paths or machine.
 If in doubt, it's local.
 
