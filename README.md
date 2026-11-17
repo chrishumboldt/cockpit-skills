@@ -18,7 +18,7 @@ No issue tracker and no pull requests. Work lives in your repo as a backlog, one
 1. **Install.** In Cockpit, open **Skills** or **Workflows** and click **Install Cockpit Skills**. Already have other packages? Use **Install from GitHub** with `https://github.com/chrishumboldt/cockpit-skills`.
 2. **Crew it.** Cockpit asks which of your agents fill the four roles (below).
 3. **Check the repo is airworthy.** In any session, ask "is this repo ready for Cockpit's workflows?". The `airworthy` skill finds your test commands, checks your branch takes a push, and proposes a short section for your `CLAUDE.md` or `AGENTS.md`.
-4. **Fly.** Type `/cockpit:workflow:idea-2-backlog`, `/cockpit:workflow:idea-2-shipped` or `/cockpit:workflow:bug-2-shipped` in a session and say what you want.
+4. **Fly.** Type `/cockpit:workflow:idea-2-backlog`, `/cockpit:workflow:idea-2-shipped` or `/cockpit:workflow:bug-2-shipped` in a session, press Enter, and say what you want in the Start run card.
 
 **Update** in the Skills view pulls new releases; **Remove** takes it all out again.
 
@@ -45,7 +45,7 @@ Steps marked **you** are gates: you approve, ask for changes, or stop the run.
 
 ### Idea 2 Backlog
 
-`/cockpit:workflow:idea-2-backlog` and the idea. Plans the work; builds nothing.
+`/cockpit:workflow:idea-2-backlog`, then the idea in the Start run card. Plans the work; builds nothing.
 
 1. **Design**: asks once whether you're working from a design, and studies it if so.
 2. **Preflight**: questions you one decision at a time, after reading your docs, code and backlog so it never asks what they already answer.
@@ -70,11 +70,11 @@ Small, clear things don't need a workflow: ask any session to add them, and `bac
 
 ### Idea 2 Shipped
 
-`/cockpit:workflow:idea-2-shipped` and the idea. Idea 2 Backlog's first six steps, then Backlog 2 Shipped's build on exactly those items: from an idea to merged code in one run, with the items in the backlog marked `done` as its record.
+`/cockpit:workflow:idea-2-shipped`, then the idea in the Start run card. Idea 2 Backlog's first six steps, then Backlog 2 Shipped's build on exactly those items: from an idea to merged code in one run, with the items in the backlog marked `done` as its record.
 
 ### Bug 2 Shipped
 
-`/cockpit:workflow:bug-2-shipped` and the bug. Proves it before it fixes it.
+`/cockpit:workflow:bug-2-shipped`, then the bug in the Start run card. Proves it before it fixes it.
 
 1. **Diagnose**: asks how to make it happen, reproduces it with a failing test, finds the root cause and commits the test. If it can't reproduce the bug, it says what would help and stops rather than guessing.
 2. **Implement**: makes that test pass, at the cause.
