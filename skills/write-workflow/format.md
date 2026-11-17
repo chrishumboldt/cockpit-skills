@@ -10,7 +10,7 @@ steps:
   implement:
     name: Implement
     agent: Grunt                 # local workflows; a package uses role: implementer
-    skill: cockpit/implement
+    skill: cockpit:skill:implement
     prompt: Implement what `{{run.folder}}/task.md` asks; write what you built to `{{run.folder}}/build.md`.
     reads: [task.md]
     writes: [build.md]
@@ -18,8 +18,8 @@ steps:
   review:
     name: Review
     parallel:
-      code:  { agent: Hard Worker, skill: cockpit/code-review, prompt: Review for correctness; write review-code.md. }
-      smell: { agent: Grunt, skill: cockpit/code-review, prompt: Review for code smells only; write review-smell.md. }
+      code:  { agent: Hard Worker, skill: cockpit:skill:code-review, prompt: Review for correctness; write review-code.md. }
+      smell: { agent: Grunt, skill: cockpit:skill:code-review, prompt: Review for code smells only; write review-smell.md. }
     writes: ['review-*.md']
     outcomes: [PASS, CHANGES]
     on:
@@ -59,4 +59,4 @@ steps:
 `{{run.folder}}`, `{{run.branch}}` (the integration branch), `{{run.base}}` (the branch the run started from), `{{project.path}}`, `{{<step>.outcome}}`, `{{<step>.file}}` (its first written file), `{{<step>.files}}`, `{{<step>.answer}}`, `{{<step>.title}}`, `{{<step>.preface}}`; inside a fan-out `{{item.id}}`, `{{item.slug}}`, `{{item.title}}`, `{{item.file}}`, `{{item.branch}}` and `{{lane.folder}}`. In a `run:` command each variable is quoted as one shell word. Step keys are a letter then letters, digits, `-` or `_`; `run`, `project`, `item`, `lane` and `end` are reserved.
 
 ## Skills a step can use
-Any installed skill, by `<package>/<skill>`. The `cockpit` package has `design-intake`, `preflight`, `write-spec`, `to-tickets`, `backlog-items`, `backlog-pick`, `implement`, `resolve-merge`, `code-review` (correctness, or smells only when the prompt says so), `diagnose` and, for chat, `backlog-add`, `airworthy` and this one. A skill reports its outcome with `report_outcome`; review skills also start their file with `OUTCOME: PASS` or `OUTCOME: CHANGES`.
+Any installed skill, by `<skillset>:skill:<id>` (for example `cockpit:skill:implement`). The `cockpit` skillset has `design-intake`, `preflight`, `write-spec`, `to-tickets`, `backlog-items`, `backlog-pick`, `implement`, `resolve-merge`, `code-review` (correctness, or smells only when the prompt says so), `diagnose` and, for chat, `backlog-add`, `airworthy` and this one. A skill reports its outcome with `report_outcome`; review skills also start their file with `OUTCOME: PASS` or `OUTCOME: CHANGES`.

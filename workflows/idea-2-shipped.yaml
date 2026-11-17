@@ -6,7 +6,7 @@ steps:
   design:
     name: Design
     role: planner
-    skill: cockpit/design-intake
+    skill: cockpit:skill:design-intake
     interactive: true
     writes: [design.md]
     outcomes: [DESIGN, NONE]
@@ -14,7 +14,7 @@ steps:
   preflight:
     name: Preflight
     role: planner
-    skill: cockpit/preflight
+    skill: cockpit:skill:preflight
     interactive: true
     context: { transcript: design }
     reads: [design.md]
@@ -24,7 +24,7 @@ steps:
   spec:
     name: Write spec
     role: planner
-    skill: cockpit/write-spec
+    skill: cockpit:skill:write-spec
     context: { transcript: preflight }
     reads: [preflight-notes.md, design.md, transcript-design.md]
     prompt: Write the spec to `{{run.folder}}/spec.md` from `{{preflight.file}}`, `{{run.folder}}/transcript-design.md` (the idea as first told) and `{{run.folder}}/design.md`. It goes into the backlog, not an issue tracker; leave out the `Issue:` line.
@@ -41,7 +41,7 @@ steps:
   items:
     name: Write backlog items
     role: planner
-    skill: cockpit/backlog-items
+    skill: cockpit:skill:backlog-items
     reads: [spec.md]
     writes: [items.md, picks.txt, tickets.md, tickets.json, 'tickets/*.md']
     outcomes: [READY]
@@ -62,7 +62,7 @@ steps:
       implement:
         name: Implement
         role: implementer
-        skill: cockpit/implement
+        skill: cockpit:skill:implement
         reads: [spec.md, 'tickets/*.md', 'review-*.md']
         writes: [build.md]
         prompt: Implement ticket {{item.id}}, {{item.title}}, from `{{run.folder}}/{{item.file}}` and the spec in `{{run.folder}}/spec.md`. Run the tests that cover what you changed. Write what you built to `build.md`.
@@ -72,7 +72,7 @@ steps:
       review:
         name: Code review
         role: reviewer
-        skill: cockpit/code-review
+        skill: cockpit:skill:code-review
         prompt: Review ticket {{item.id}}'s change (its lane was cut from `{{run.branch}}`) for correctness against `{{run.folder}}/{{item.file}}` and `{{run.folder}}/spec.md`; write the review to `review-code.md`.
         writes: [review-code.md]
         outcomes: [PASS, CHANGES]
@@ -86,7 +86,7 @@ steps:
       resolve:
         name: Resolve merge
         role: implementer
-        skill: cockpit/resolve-merge
+        skill: cockpit:skill:resolve-merge
         reads: [spec.md, 'tickets/*.md']
         writes: [resolve.md]
         outcomes: [DONE]
@@ -123,12 +123,12 @@ steps:
       code-review:
         name: Code review
         role: reviewer
-        skill: cockpit/code-review
+        skill: cockpit:skill:code-review
         prompt: Review the integration branch `{{run.branch}}` as a whole, against its base `{{run.base}}`, for correctness against `{{run.folder}}/spec.md`; write the review to `{{run.folder}}/final-review-code.md`.
       code-smell:
         name: Code smell
         role: smell-checker
-        skill: cockpit/code-review
+        skill: cockpit:skill:code-review
         prompt: Review the integration branch `{{run.branch}}` as a whole, against its base `{{run.base}}`, for code smells only; write the review to `{{run.folder}}/final-review-smell.md`.
     writes: ['final-review-*.md']
     outcomes: [PASS, CHANGES]
@@ -140,7 +140,7 @@ steps:
   fix:
     name: Fix
     role: implementer
-    skill: cockpit/implement
+    skill: cockpit:skill:implement
     reads: ['final-review-*.md', spec.md, gate-ship.md]
     writes: [fix.md]
     outcomes: [DONE]

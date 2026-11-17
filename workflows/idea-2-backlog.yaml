@@ -6,7 +6,7 @@ steps:
   design:
     name: Design
     role: planner
-    skill: cockpit/design-intake
+    skill: cockpit:skill:design-intake
     interactive: true
     writes: [design.md]
     outcomes: [DESIGN, NONE]
@@ -14,7 +14,7 @@ steps:
   preflight:
     name: Preflight
     role: planner
-    skill: cockpit/preflight
+    skill: cockpit:skill:preflight
     interactive: true
     context: { transcript: design }
     reads: [design.md]
@@ -24,7 +24,7 @@ steps:
   spec:
     name: Write spec
     role: planner
-    skill: cockpit/write-spec
+    skill: cockpit:skill:write-spec
     context: { transcript: preflight }
     reads: [preflight-notes.md, design.md, transcript-design.md]
     prompt: Write the spec to `{{run.folder}}/spec.md` from `{{preflight.file}}`, `{{run.folder}}/transcript-design.md` (the idea as first told) and `{{run.folder}}/design.md`. It goes into the backlog, not an issue tracker; leave out the `Issue:` line.
@@ -41,7 +41,7 @@ steps:
   items:
     name: Write backlog items
     role: planner
-    skill: cockpit/backlog-items
+    skill: cockpit:skill:backlog-items
     reads: [spec.md]
     writes: [items.md]
     outcomes: [READY]

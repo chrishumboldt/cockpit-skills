@@ -6,7 +6,7 @@ steps:
   diagnose:
     name: Diagnose
     role: planner
-    skill: cockpit/diagnose
+    skill: cockpit:skill:diagnose
     interactive: true
     writes: [diagnosis.md]
     outcomes: [FOUND, NOT_FOUND]
@@ -17,7 +17,7 @@ steps:
   implement:
     name: Implement
     role: implementer
-    skill: cockpit/implement
+    skill: cockpit:skill:implement
     reads: [diagnosis.md, 'review-*.md', gate-ship.md]
     writes: [build.md]
     prompt: Fix the bug in `{{run.folder}}/diagnosis.md` on `{{run.branch}}`. Its failing test is your first red; make it pass without weakening it. When they exist, address `{{run.folder}}/review-code.md` and the user's notes in `{{run.folder}}/gate-ship.md`. Write what you did to `{{run.folder}}/build.md`.
@@ -25,7 +25,7 @@ steps:
   review:
     name: Code review
     role: reviewer
-    skill: cockpit/code-review
+    skill: cockpit:skill:code-review
     prompt: Review the fix on `{{run.branch}}`, against its base `{{run.base}}`, for correctness against `{{run.folder}}/diagnosis.md`; write the review to `{{run.folder}}/review-code.md`.
     writes: [review-code.md]
     outcomes: [PASS, CHANGES]
